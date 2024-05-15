@@ -37,5 +37,9 @@ namespace Client
                 MessageBox.Show($"Page with key '{pageKey}' not found.");
             }
         }
+        public void NavigateToMainWindow()
+        {
+            _frame.Content = new MainWindow();
+        }
     }
 }

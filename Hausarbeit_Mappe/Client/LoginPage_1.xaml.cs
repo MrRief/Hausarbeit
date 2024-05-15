@@ -16,31 +16,33 @@ using System.Windows.Shapes;
 namespace Client
 {
     /// <summary>
-    /// Interaktionslogik für LoginPage.xaml
+    /// Interaktionslogik für LoginPage_1.xaml
     /// </summary>
-    public partial class LoginPage : Page
+    public partial class LoginPage_1 : UserControl
     {
-        public LoginPage()
+        private readonly NavigationService _navigationService;
+        public LoginPage_1(NavigationService navigationService)
         {
             InitializeComponent();
+            _navigationService = navigationService;
+           
         }
-
         private void Loginbutton_Click(object sender, RoutedEventArgs e)
         {
-            if(Email.Text.Length == 0 || Password.Password.Length == 0) 
+            if (Email.Text.Length == 0 || Password.Password.Length == 0)
             {
                 ErrorText.Content = "Email oder Passwort fehlt!";
                 ErrorText.Visibility = Visibility.Visible;
             }
             else
             {
-                
+
             }
         }
 
         private void Createbutton_Click(object sender, RoutedEventArgs e)
         {
-            //navigiere zu [Nutzer erstellen]
+            _navigationService.NavigateTo("LoginPage2");
         }
     }
 }

@@ -15,7 +15,7 @@ namespace _StreamingServer.Controllers
         }
 
 
-        //localhost:44351/api/m
+        //localhost:44351/api
 
         [HttpPost]
         public IActionResult CreateUser(string name, string vorname, string email, string passwort)
