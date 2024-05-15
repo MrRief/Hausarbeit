@@ -8,17 +8,25 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Net.Http.Json;
+using System.Net.Http;
 
 namespace Client
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly NavigationService _navigationService;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            _navigationService = new NavigationService(MainFrame);
+            _navigationService.RegisterPage("LoginPage", typeof(LoginPage));
+            _navigationService.RegisterPage("MainWindow", typeof(MainWindow));
+
+            _navigationService.NavigateTo("LoginPage");
+           
         }
     }
 }
