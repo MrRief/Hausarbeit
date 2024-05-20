@@ -21,10 +21,10 @@ namespace Client
     public partial class LoginPage_1 : UserControl
     {
         private readonly NavigationService _navigationService;
-        public LoginPage_1(NavigationService navigationService)
+        public LoginPage_1()
         {
             InitializeComponent();
-            _navigationService = navigationService;
+            
            
         }
         private void Loginbutton_Click(object sender, RoutedEventArgs e)

@@ -21,7 +21,7 @@ namespace Client
         {
             InitializeComponent();
             _navigationService = new NavigationService(MainFrame);
-            LoginPage_1 _loginPage1 = new LoginPage_1(_navigationService);
+           
 
             _navigationService.RegisterPage("LoginPage1", typeof(LoginPage_1));
             _navigationService.RegisterPage("LoginPage2", typeof(LoginPage_2));
