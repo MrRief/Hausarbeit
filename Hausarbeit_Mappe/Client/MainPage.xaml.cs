@@ -1,4 +1,8 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -8,21 +12,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Net.Http.Json;
-using System.Net.Http;
 
 namespace Client
 {
-    public partial class MainWindow : Window
+    /// <summary>
+    /// Interaktionslogik für MainPage.xaml
+    /// </summary>
+    public partial class MainPage : UserControl
     {
-        private readonly NavigationService _navigationService;
-
-        public MainWindow()
+        public MainPage()
         {
             InitializeComponent();
-            MainFrame.NavigationService.Navigate(new LoginPage_1(this));
-           
         }
-      
     }
 }

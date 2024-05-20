@@ -24,10 +24,10 @@
         <TextBlock  Grid.Column="1"  Text="Passwort:"></TextBlock>
         <PasswordBox x:Name="Password" Grid.Column="1" Grid.Row="1" Height="20" BorderBrush="Aqua"></PasswordBox>
 
-        <Label Name="ErrorText" Visibility="Hidden" Foreground="Red" FontSize="20" Grid.Row="2" Grid.ColumnSpan="2"></Label>
+        <TextBlock Name="ErrorText" Visibility="Hidden" Foreground="Red" FontSize="20" Grid.Row="2" Grid.ColumnSpan="2"></TextBlock>
 
         <Button Click="Loginbutton_Click" x:Name="Loginbutton" Grid.Row="3" Content="Login"></Button>
-        <Button Click="Createbutton_Click" x:Name="Createbutton" Grid.Column="1" Grid.Row="3" Content="Nutzer erstellen"></Button>
+        <Button Click="Registerbutton_Click" x:Name="Registerbutton" Grid.Column="1" Grid.Row="3" Content="Registrieren"></Button>
 
 
     </Grid>

@@ -23,10 +23,12 @@ namespace Client
     public partial class LoginPage_2 : UserControl
     {
         public HttpClient client;
-        public LoginPage_2()
+        private MainWindow _mainWindow;
+        public LoginPage_2(MainWindow wnd)
         {
             InitializeComponent();
             client = new HttpClient();
+            _mainWindow = wnd;
         }
 
         private async void Registrieren_Click(object sender, RoutedEventArgs e)
@@ -67,7 +69,7 @@ namespace Client
 
         private void Zurueck_Click(object sender, RoutedEventArgs e)
         {
-
+            _mainWindow.MainFrame.NavigationService.Navigate(new LoginPage_1(_mainWindow));
         }
     }
 }

@@ -42,6 +42,21 @@ namespace _StreamingServer.Controllers
 
             return Ok(nutzerindb);
         }
+        public IActionResult Login(string email, string password)
+        {
+            Nutzer nutzerindb = db.Nutzers.SingleOrDefault(x =>x.Email == email);
+
+            if(nutzerindb == null)
+            {
+                return NotFound();
+            }
+
+            if(nutzerindb.Passwort == password)
+            {
+                return Ok();
+            }
+            return NotFound();
+        }
 
     }
 }
