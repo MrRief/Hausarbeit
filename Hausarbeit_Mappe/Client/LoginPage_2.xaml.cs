@@ -22,12 +22,12 @@ namespace Client
     /// </summary>
     public partial class LoginPage_2 : UserControl
     {
-        public HttpClient client;
+        public readonly HttpClient client;
         private MainWindow _mainWindow;
         public LoginPage_2(MainWindow wnd)
         {
             InitializeComponent();
-            client = new HttpClient();
+            client = HttpClientSingleton.Instance;
             _mainWindow = wnd;
         }
 
@@ -36,7 +36,7 @@ namespace Client
             if(P1.Password == P2.Password)
             {
                 //Registrieren
-                client.BaseAddress = new Uri("https//localhost:44351/");
+              
 
                 using (client)
                 {
@@ -44,7 +44,7 @@ namespace Client
                     {
                         string jsonData = $"{{\"name\": \"{Name.Text}\", \"vorname\": \"{Vorname.Text}\", \"email\": \"{Email.Text}\", \"passwort\": \"{P1.Password}\"}}";
                         var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-                        HttpResponseMessage response = await client.PostAsync("api/createuser", content);
+                        HttpResponseMessage response = await client.PostAsJsonAsync("api/user/createuser", content);
                         if(response.IsSuccessStatusCode)
                         {
                             string responseBody = await response.Content.ReadAsStringAsync();

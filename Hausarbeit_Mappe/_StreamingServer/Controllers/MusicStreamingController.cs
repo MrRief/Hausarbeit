@@ -18,6 +18,7 @@ namespace _StreamingServer.Controllers
         //localhost:44351/api
 
         [HttpPost]
+        [Route("api/user")]
         public IActionResult CreateUser(string name, string vorname, string email, string passwort)
         {
             Nutzer nutzer = new Nutzer();
@@ -31,6 +32,8 @@ namespace _StreamingServer.Controllers
             return CreatedAtAction("GetUser", new { id = nutzer.NutzerId }, nutzer); //Gibt die Methode zurück, die das erstellte Objekt findet.
         }
         [HttpGet]
+        [Route("api/user")]
+
         public IActionResult GetUser(int id)
         {
             Nutzer nutzerindb = db.Nutzers.SingleOrDefault(x => x.NutzerId == id);
@@ -42,6 +45,8 @@ namespace _StreamingServer.Controllers
 
             return Ok(nutzerindb);
         }
+        [HttpGet]
+        [Route("api/login")]
         public IActionResult Login(string email, string password)
         {
             Nutzer nutzerindb = db.Nutzers.SingleOrDefault(x =>x.Email == email);

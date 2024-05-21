@@ -22,12 +22,12 @@ namespace Client
     /// </summary>
     public partial class LoginPage_1 : UserControl
     {
-        public HttpClient client;
+        public readonly HttpClient client;
         private MainWindow _mainwindow;
         public LoginPage_1(MainWindow wnd)
         {
             InitializeComponent();
-            client = new HttpClient();
+            client = HttpClientSingleton.Instance;
             _mainwindow = wnd;
             
 
@@ -35,38 +35,38 @@ namespace Client
         }
         private async void Loginbutton_Click(object sender, RoutedEventArgs e)
         {
-            if (Email.Text.Length == 0 || Password.Password.Length == 0)
-            {
-                ErrorText.Text = "Email oder Passwort fehlt!";
-                ErrorText.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                client.BaseAddress = new Uri("https//localhost:44351/");
-                using (client)
-                {
-                    try
-                    {
-                        string jsonData = $"{{\"{Email.Text}\", \"passwort\": \"{Password.Password}\"}}";
-                        var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-                        HttpResponseMessage response = await client.PostAsync("api/login", content);
-                        if (response.IsSuccessStatusCode)
-                        {
-                            string responseBody = await response.Content.ReadAsStringAsync();
-                            _mainwindow.MainFrame.NavigationService.Navigate(new MainPage());
-                        }
-                        else
-                        {
-                            ErrorText.Text = "Fehler";
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        ErrorText.Text = "Fehler:" + ex.Message;
-                    }
+            //if (Email.Text.Length == 0 || Password.Password.Length == 0)
+            //{
+            //    ErrorText.Text = "Email oder Passwort fehlt!";
+            //    ErrorText.Visibility = Visibility.Visible;
+            //}
+            //else
+            //{
+               
+            //    using (client)
+            //    {
+            //        try
+            //        {
+            //            string jsonData = $"{{\"{Email.Text}\", \"passwort\": \"{Password.Password}\"}}";
+            //            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+            //            HttpResponseMessage response = await client.PostAsync("api/login", content);
+            //            if (response.IsSuccessStatusCode)
+            //            {
+            //                string responseBody = await response.Content.ReadAsStringAsync();
+                            _mainwindow.MainFrame.NavigationService.Navigate(new MainPage(_mainwindow));
+            //            }
+            //            else
+            //            {
+            //                ErrorText.Text = "Fehler";
+            //            }
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            ErrorText.Text = "Fehler:" + ex.Message;
+            //        }
 
-                }
-            }
+            //    }
+            //}
 
 
         }

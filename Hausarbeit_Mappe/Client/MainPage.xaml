@@ -5,8 +5,84 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Client"
              mc:Ignorable="d" 
+           Background="White"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+    <Grid >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="4*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
             
+            <Button x:Name="Benutzer" Content="Benutzer" Click="Benutzer_Click"></Button>
+            <Button x:Name="Favoriten" Grid.Row="1" Content="Favoriten" Click="Favoriten_Click"></Button>
+            <Button x:Name="Playlists" Grid.Row="2" Content="Playlists" Click="Playlists_Click"></Button>
+            <Button x:Name="Suche" Grid.Row="3" Content="Suche" Click="Suche_Click"></Button>
+
+        </Grid>
+
+        <Frame x:Name="ContentFrame" NavigationUIVisibility="Hidden" Grid.Column="1" ></Frame>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="Titel"></Label>
+            <Label Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Künstler"></Label>
+        </Grid>
+
+            <Grid Grid.Column="1" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="5*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+
+            </Grid.RowDefinitions>
+            
+            
+            <Slider Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Center" x:Name="Lautstärke" Value="5" Minimum="0" Maximum="10" ValueChanged="Lautstärke_ValueChanged"></Slider>
+            <TextBlock Text="00:00" HorizontalAlignment="Right"  VerticalAlignment="Center" Grid.Row="1" x:Name="CurrentTimeTextBlock" />
+            <Slider Grid.ColumnSpan="2" Grid.Row="1" Grid.Column="1" x:Name="PositionSlider" Minimum="0" VerticalAlignment="Center" PreviewMouseUp="PositionSlider_PreviewMouseUp" />
+            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1" Grid.Column="3" x:Name="TotalTimeTextBlock" />
+                
+            <Grid Grid.Row="2" Grid.ColumnSpan="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+            <Button Grid.Row="2" x:Name="Start" Content="Start"  Click="Start_Click"></Button>
+            <Button Grid.Row="2" Grid.Column="1" x:Name="Stop" Content="Stop" Click="Stop_Click"></Button>
+            <Button Grid.Row="2" Grid.Column="2" x:Name="Restart" Content="Restart" Click="Restart_Click"></Button>
+            <ToggleButton Grid.Row="2" Grid.Column="3" x:Name="Loop" Content="Wiederholen" Checked="Loop_Checked" Unchecked="Loop_Unchecked"></ToggleButton>
+            </Grid>
+       
+        </Grid>
+
+        <Border  BorderBrush="Black" BorderThickness="5" ></Border>
+        <Border BorderBrush="Black" BorderThickness="5" Grid.Row="1"></Border>
+        <Border  BorderBrush="Black" BorderThickness="5" Grid.Column="1" Grid.Row="1"></Border>
+        <Border  BorderBrush="Black" BorderThickness="5" Grid.Column="1" Grid.Row="0"></Border>
+
     </Grid>
 </UserControl>
