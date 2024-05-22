@@ -47,9 +47,7 @@ public partial class MusicStreamDbContext : DbContext
 
             entity.Property(e => e.Genre).HasMaxLength(20);
             entity.Property(e => e.KünstlerId).HasColumnName("KünstlerID");
-            entity.Property(e => e.Länge).HasMaxLength(8);
-            entity.Property(e => e.Pfad).HasMaxLength(75);
-            entity.Property(e => e.Titel).HasMaxLength(20);
+            entity.Property(e => e.Titel).HasMaxLength(40);
 
             entity.HasOne(d => d.Künstler).WithMany(p => p.Lieders)
                 .HasForeignKey(d => d.KünstlerId)

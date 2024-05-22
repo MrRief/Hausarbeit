@@ -139,13 +139,18 @@ namespace Client
 
         private void Suche_Click(object sender, RoutedEventArgs e)
         {
-            ContentFrame.NavigationService.Navigate(new _Suche());
+            ContentFrame.NavigationService.Navigate(new _Suche(this));
 
         }
 
         public void Stopthemusic()
         {
             _waveOutEvent.Stop();
+        }
+
+        public void SongChange(string name)
+        {
+            
         }
     }
 }
