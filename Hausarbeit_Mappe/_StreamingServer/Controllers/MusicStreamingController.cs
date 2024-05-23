@@ -4,54 +4,86 @@ using Microsoft.EntityFrameworkCore;
 using System.Net.Http;
 using System.Net;
 using System.Web;
-using System.Web.Http;
-using System.Net.Http.Headers;
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using System.IO;
-using System.Linq;
+using Azure;
 
 namespace _StreamingServer.Controllers
 {
-    
-    public class MusicStreamingController : ApiController
+
+    public class MusicStreamingController : ControllerBase
     {
         private readonly MusicStreamDbContext db;
+
 
         public MusicStreamingController(MusicStreamDbContext context)
         {
             db = context;
+
         }
 
 
         //localhost:44351/api
         [HttpGet]
         [Route("api/songs_in_db")]
-        public IHttpActionResult GetSongsInDb()
+        public IActionResult GetSongsInDb()
         {
-            var list = db.Lieders.ToList();
-            return Ok(list);
+            try
+            {
+                var list = db.Lieders.Select(lied => new 
+                {
+                    Titel = lied.Titel,
+                    Kuenstler = lied.Künstler.Name
+                })
+                .ToList();
+
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
         [HttpGet]
         [Route("api/stream")]
-        public async Task<IHttpActionResult> StreamSong(string name)
+        public IActionResult StreamAudio([FromQuery] string filetoget)
         {
-            var filepath = Path.Combine(Directory.GetCurrentDirectory(), "api/Lieder", name);
-            if (!System.IO.File.Exists(filepath))
+            
+            string folderpath = Path.Combine(Directory.GetCurrentDirectory(), "/Lieder");
+
+            string[] audioFiles = Directory.GetFiles(folderpath, "*.mp3")
+            .Where(file =>
             {
-                return NotFound();
-            }
-            var memoryStream = new MemoryStream();
-            using(var stream = new FileStream(filepath,FileMode.Open, FileAccess.Read, FileShare.Read))
+                string fileName = Path.GetFileNameWithoutExtension(file);
+                return fileName.IndexOf(filetoget, StringComparison.OrdinalIgnoreCase) >= 0;
+            })
+            .ToArray();
+            if(audioFiles.Length == 0)
             {
-                await stream.CopyToAsync(memoryStream);
+                return NotFound("Audio file not found");
             }
-            memoryStream.Position = 0;
-            return File(memoryStream, "audio/mpeg", enableRangeProcessing: true);
+            string filetostream = audioFiles[0];
+
+            var fileStream = new FileStream(filetostream,FileMode.Open,FileAccess.Read,FileShare.Read);
+
+            return File(fileStream,"audio/mpeg");
+            }
+
+        private IActionResult RangeNotSatisfiable(long totalLength)
+        {
+            Response.StatusCode = (int)HttpStatusCode.RequestedRangeNotSatisfiable;
+            Response.Headers[HeaderNames.ContentRange] = new ContentRangeHeaderValue(totalLength).ToString();
+            return new EmptyResult();
         }
+
 
 
         [HttpPost]
         [Route("api/user")]
-        public IHttpActionResult CreateUser(string name, string vorname, string email, string passwort)
+        public IActionResult CreateUser(string name, string vorname, string email, string passwort)
         {
             Nutzer nutzer = new Nutzer();
             nutzer.Name = name;
@@ -66,7 +98,7 @@ namespace _StreamingServer.Controllers
         [HttpGet]
         [Route("api/user")]
 
-        public IHttpActionResult GetUser(int id)
+        public IActionResult GetUser(int id)
         {
             Nutzer nutzerindb = db.Nutzers.SingleOrDefault(x => x.NutzerId == id);
 
@@ -74,21 +106,21 @@ namespace _StreamingServer.Controllers
             {
                 return NotFound();
             }
-            
+
             return Ok(nutzerindb);
         }
         [HttpGet]
         [Route("api/login")]
-        public IHttpActionResult Login(string email, string password)
+        public IActionResult Login(string email, string password)
         {
-            Nutzer nutzerindb = db.Nutzers.SingleOrDefault(x =>x.Email == email);
+            Nutzer nutzerindb = db.Nutzers.SingleOrDefault(x => x.Email == email);
 
-            if(nutzerindb == null)
+            if (nutzerindb == null)
             {
                 return NotFound();
             }
 
-            if(nutzerindb.Passwort == password)
+            if (nutzerindb.Passwort == password)
             {
                 return Ok();
             }

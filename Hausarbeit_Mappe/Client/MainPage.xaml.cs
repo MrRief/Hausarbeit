@@ -13,8 +13,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using NAudio.Wave;
+
 using NAudio.Wave.SampleProviders;
+using static System.Net.WebRequestMethods;
 
 namespace Client
 {
@@ -23,9 +24,8 @@ namespace Client
     /// </summary>
     public partial class MainPage : UserControl
     {
-        private WaveOutEvent _waveOutEvent;
-        private AudioFileReader _audioFileReader;
-        private DispatcherTimer _timer;
+     
+       
         private MainWindow _mainWindow;
         private bool repeat = false;
 
@@ -33,70 +33,55 @@ namespace Client
         public MainPage(MainWindow wnd)
         {
             InitializeComponent();
-            ContentFrame.NavigationService.Navigate(new _Suche());
+            ContentFrame.NavigationService.Navigate(new _Suche(this));
             _mainWindow = wnd;
-            _waveOutEvent = new WaveOutEvent();
-            _timer = new DispatcherTimer();
-
-            _audioFileReader = new AudioFileReader("C:\\Users\\Tim\\Desktop\\Hausarbeit\\Hausarbeit\\Hausarbeit_Mappe\\Client\\Lieder\\Test.mp3");
-
-            _waveOutEvent.Init(_audioFileReader);
-
-            TotalTimeTextBlock.Text = _audioFileReader.TotalTime.ToString(@"mm\:ss");   
-            PositionSlider.Maximum = _audioFileReader.TotalTime.TotalSeconds;
-            _timer.Interval = TimeSpan.FromSeconds(1);
-            _timer.Tick += Timer_Tick;
-            _waveOutEvent.PlaybackStopped += Songende;
+           
         }
 
+        public void SongAusSuche(string titel,string kuenstler) 
+        {
+            ATitel.Visibility = Visibility.Visible;
+            AKuenstler.Visibility = Visibility.Visible;
+            ATitel.Text= titel;
+            AKuenstler.Text= kuenstler;
+
+            string audioUrl = "https://localhost:44351/api/stream" + Uri.EscapeDataString(kuenstler+" - "+titel);
+            mediaElement.Source = new Uri(audioUrl);
+        }
         private void Start_Click(object sender, RoutedEventArgs e)
         {
-            _waveOutEvent.Play();
-            _timer.Start();
+           mediaElement.Play();
             
-            
-
         }
 
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            if (_audioFileReader != null && _waveOutEvent.PlaybackState == PlaybackState.Playing)
-            {
-                PositionSlider.Value = _audioFileReader.CurrentTime.TotalSeconds;
-                CurrentTimeTextBlock.Text = _audioFileReader.CurrentTime.ToString(@"mm\:ss");
-                 
-            }
-        }
+      
 
         private void Stop_Click(object sender, RoutedEventArgs e)
         {
-            _waveOutEvent.Pause();
-            _timer.Stop();
+            mediaElement.Pause();
         }
 
         private void Lautstärke_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if(_audioFileReader != null)
+            if(mediaElement != null)
             {
-                _audioFileReader.Volume = (float)Lautstärke.Value;
+                mediaElement.Volume = e.NewValue;
             }
         }
 
         private void PositionSlider_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (_audioFileReader != null)
+            if (mediaElement != null)
             {
-                _audioFileReader.CurrentTime = TimeSpan.FromSeconds(PositionSlider.Value);
+                
             }
         }
 
         private void Restart_Click(object sender, RoutedEventArgs e)
         {
-            if(_audioFileReader != null)
+            if(mediaElement != null)
             {
-                _audioFileReader.Position = 0;
-                _waveOutEvent.Play();
-                _timer.Start();
+               
             }
         }
 
@@ -110,14 +95,7 @@ namespace Client
             repeat = false;
         }
 
-        private void Songende(object sender, StoppedEventArgs e)
-        {
-            if(repeat && _audioFileReader != null) 
-            {
-                _audioFileReader.Position = 0;
-                _waveOutEvent.Play();
-            }
-        }
+       
 
         private void Benutzer_Click(object sender, RoutedEventArgs e)
         {

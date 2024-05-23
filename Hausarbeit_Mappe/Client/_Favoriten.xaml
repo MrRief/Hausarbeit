@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:Client"
              mc:Ignorable="d" 
              Background="Green"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             MaxWidth="1024" MaxHeight="768">
     <Grid>
             
     </Grid>

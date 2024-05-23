@@ -22,6 +22,11 @@ namespace Client
     public partial class _Suche : UserControl
     {
         private MainPage _mainPage;
+        public class Song
+        {
+            public string? Titel { get; set; }
+            public string? Kuenstler { get; set; }
+        }
         public _Suche(MainPage page)
         {
             InitializeComponent();
@@ -29,32 +34,47 @@ namespace Client
             GetSongsAsync();
         }
 
-        async void GetSongsAsync()
+        async Task GetSongsAsync()
         {
-            using(HttpClient client = new HttpClient())
+            using (HttpClient client = new HttpClient())
             {
-                string apiUrl = "http://localhost:44351/api/songs_in_db";
+                string apiUrl = "https://localhost:44351/api/songs_in_db";
                 var response = await client.GetAsync(apiUrl);
 
-                var songlist = await response.Content.ReadAsAsync<List<string>>();
+                var songlist = await response.Content.ReadAsAsync<List<Song>>();
 
-                foreach(var song in songlist)
-                {
-                    Create_Button(song.Split('-')[1], song.Split('-')[0]);
-                }
+                Create_Button(songlist);
+
+
             }
         }
-        C:\Users\Tim\Desktop\Hausarbeit\Hausarbeit\Hausarbeit_Mappe\_StreamingServer\Lieder\David Kushner - Daylight.mp3
-        private void Create_Button(string song, string artist)
-        {
-            Button _song = new Button();
-            Button _artist = new Button();
-            _song.Content = song;
-            _artist.Content = artist;
 
-            Titel.Children.Add(_song);
-            Künstler.Children.Add(_artist);
-            
+        private void Create_Button(List<Song> songs)
+        {
+            foreach (var song in songs)
+            {
+                Button Herbert = new Button();
+                Herbert.Content = $"{song.Titel} - {song.Kuenstler}";
+                Herbert.Click += (sender, e) =>
+                {
+                    _mainPage.SongAusSuche(song.Titel, song.Kuenstler);
+                };
+                  
+                Suche.Children.Add(Herbert);
+            }
+
+
+        }
+
+        private void Filter_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string filter = Filter.Text.ToLower();
+
+            foreach (Button b in Suche.Children.OfType<Button>())
+            {
+                string buttonContent = b.Content.ToString().ToLower();
+                b.Visibility = string.IsNullOrEmpty(filter) || buttonContent.Contains(filter) ? Visibility.Visible : Visibility.Collapsed;
+            }
         }
     }
 }

@@ -6,16 +6,13 @@
              xmlns:local="clr-namespace:Client"
              mc:Ignorable="d" 
              Background="Violet"
-             d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel x:Name="Suche">
-        <TextBox></TextBox>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <StackPanel x:Name="Titel" Grid.Column="0"></StackPanel>
-            <StackPanel x:Name="Künstler" Grid.Column="1"></StackPanel>
-        </Grid>
+             d:DesignHeight="450" d:DesignWidth="800"
+             MaxWidth="1024" MaxHeight="768">
+    
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <StackPanel Margin="5" x:Name="Suche">
+        <TextBox x:Name="Filter" TextChanged="Filter_TextChanged"></TextBox>
+        <TextBlock x:Name="Error"></TextBlock>
     </StackPanel>
+    </ScrollViewer>
 </UserControl>
