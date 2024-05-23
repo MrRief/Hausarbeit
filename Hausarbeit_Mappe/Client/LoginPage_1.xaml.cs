@@ -29,46 +29,48 @@ namespace Client
             InitializeComponent();
             client = HttpClientSingleton.Instance;
             _mainwindow = wnd;
-            
+
 
 
         }
         private async void Loginbutton_Click(object sender, RoutedEventArgs e)
         {
-            //if (Email.Text.Length == 0 || Password.Password.Length == 0)
-            //{
-            //    ErrorText.Text = "Email oder Passwort fehlt!";
-            //    ErrorText.Visibility = Visibility.Visible;
-            //}
-            //else
-            //{
-               
-            //    using (client)
-            //    {
-            //        try
-            //        {
-            //            string jsonData = $"{{\"{Email.Text}\", \"passwort\": \"{Password.Password}\"}}";
-            //            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            //            HttpResponseMessage response = await client.PostAsync("api/login", content);
-            //            if (response.IsSuccessStatusCode)
-            //            {
-            //                string responseBody = await response.Content.ReadAsStringAsync();
-                            _mainwindow.MainFrame.NavigationService.Navigate(new MainPage(_mainwindow));
-            //            }
-            //            else
-            //            {
-            //                ErrorText.Text = "Fehler";
-            //            }
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            ErrorText.Text = "Fehler:" + ex.Message;
-            //        }
+            string email = Email.Text;
+            string passwort = Password.Password;
 
-            //    }
-            //}
+            if (string.IsNullOrEmpty(passwort) || string.IsNullOrEmpty(email))
+            {
+                ErrorText.Text = "Email oder Passwort nicht eingegeben!";
+            }
+            else
+            {
+
+                bool istregistriert = await AuthentifiziereNutzer(email, passwort);
+                if (istregistriert)
+                {
+                    _mainwindow.MainFrame.NavigationService.Navigate(new MainPage(_mainwindow));
+                }
+                else
+                {
+                    ErrorText.Text = "Nutzer nicht registriert!";
+                }
+            }
 
 
+
+        }
+
+        private async Task<bool> AuthentifiziereNutzer(string email, string passwort)
+        {
+            using(HttpClient client = new HttpClient())
+            {
+                string apiUrl = $"https://localhost:44351/api/login";
+                var LoginModel = new {Email =  email, Passwort = passwort};
+
+                HttpResponseMessage responseMessage = await client.PostAsJsonAsync(apiUrl,LoginModel);
+
+                return responseMessage.IsSuccessStatusCode;
+            }
         }
 
         private void Registerbutton_Click(object sender, RoutedEventArgs e)

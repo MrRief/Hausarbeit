@@ -123,7 +123,7 @@ namespace Client
 
         public void Stopthemusic()
         {
-            _waveOutEvent.Stop();
+            mediaElement.Stop();
         }
 
         public void SongChange(string name)

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using System.IO;
 using Azure;
+using Microsoft.AspNetCore.Identity.Data;
 
 namespace _StreamingServer.Controllers
 {
@@ -82,7 +83,7 @@ namespace _StreamingServer.Controllers
 
 
         [HttpPost]
-        [Route("api/user")]
+        [Route("api/create_user")]
         public IActionResult CreateUser(string name, string vorname, string email, string passwort)
         {
             Nutzer nutzer = new Nutzer();
@@ -109,22 +110,27 @@ namespace _StreamingServer.Controllers
 
             return Ok(nutzerindb);
         }
-        [HttpGet]
+        [HttpPost]
         [Route("api/login")]
-        public IActionResult Login(string email, string password)
+        public IActionResult Login(LoginModel request)
         {
-            Nutzer nutzerindb = db.Nutzers.SingleOrDefault(x => x.Email == email);
+            Nutzer nutzerindb = db.Nutzers.SingleOrDefault(x => x.Email == request.Email);
 
             if (nutzerindb == null)
             {
                 return NotFound();
             }
 
-            if (nutzerindb.Passwort == password)
+            if (nutzerindb.Passwort == request.Passwort)
             {
                 return Ok();
             }
             return NotFound();
+        }
+        public class LoginModel 
+        {
+            public string? Email { get; set; }
+            public string? Passwort { get; set;}
         }
 
     }
