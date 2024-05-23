@@ -16,4 +16,6 @@ public partial class Nutzer
     public string Passwort { get; set; } = null!;
 
     public virtual ICollection<Playlist> Playlists { get; set; } = new List<Playlist>();
+
+    public virtual ICollection<Lieder> Lieds { get; set; } = new List<Lieder>();
 }

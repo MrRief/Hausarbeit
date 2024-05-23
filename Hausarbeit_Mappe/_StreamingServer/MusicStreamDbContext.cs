@@ -24,7 +24,7 @@ public partial class MusicStreamDbContext : DbContext
     public virtual DbSet<Playlist> Playlists { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=MusicStreamDB;Integrated Security=SSPI");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -65,6 +65,25 @@ public partial class MusicStreamDbContext : DbContext
             entity.Property(e => e.Name).HasMaxLength(20);
             entity.Property(e => e.Passwort).HasMaxLength(20);
             entity.Property(e => e.Vorname).HasMaxLength(20);
+
+            entity.HasMany(d => d.Lieds).WithMany(p => p.Nutzers)
+                .UsingEntity<Dictionary<string, object>>(
+                    "NutzerFavoriten",
+                    r => r.HasOne<Lieder>().WithMany()
+                        .HasForeignKey("LiedId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_NutzerFavoriten_LiedID"),
+                    l => l.HasOne<Nutzer>().WithMany()
+                        .HasForeignKey("NutzerId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_NutzerFavoriten_NutzerID"),
+                    j =>
+                    {
+                        j.HasKey("NutzerId", "LiedId");
+                        j.ToTable("NutzerFavoriten");
+                        j.IndexerProperty<int>("NutzerId").HasColumnName("NutzerID");
+                        j.IndexerProperty<int>("LiedId").HasColumnName("LiedID");
+                    });
         });
 
         modelBuilder.Entity<Playlist>(entity =>

@@ -24,10 +24,12 @@ namespace Client
     /// </summary>
     public partial class MainPage : UserControl
     {
-     
-       
+
+
         private MainWindow _mainWindow;
         private bool repeat = false;
+        private bool isUsingSlider = false;
+        private DispatcherTimer _timer;
 
 
         public MainPage(MainWindow wnd)
@@ -35,53 +37,92 @@ namespace Client
             InitializeComponent();
             ContentFrame.NavigationService.Navigate(new _Suche(this));
             _mainWindow = wnd;
-           
+            
+
         }
 
-        public void SongAusSuche(string titel,string kuenstler) 
+        private void InitTimer()
+        {
+            mediaElement.MediaOpened += MediaElement_MediaOpened;
+            mediaElement.MediaEnded += MediaElement_MediaEnded;
+            _timer = new DispatcherTimer();
+            _timer.Interval = TimeSpan.FromSeconds(1);
+            _timer.Tick += Timer_Tick;
+            _timer.Start();
+        }
+
+        private void Timer_Tick(object? sender, EventArgs e)
+        {
+            if (!isUsingSlider)
+            {
+                PositionSlider.Value = mediaElement.Position.TotalSeconds;
+            }
+            CurrentTimeTextBlock.Text = mediaElement.Position.ToString(@"mm\:ss");
+        }
+
+        private void MediaElement_MediaEnded(object sender, RoutedEventArgs e)
+        {
+            PositionSlider.Value = 0;
+            if (repeat)
+            {
+                mediaElement.Position = TimeSpan.Zero;
+                mediaElement.Play();
+            }
+        }
+
+        private void MediaElement_MediaOpened(object sender, RoutedEventArgs e)
+        {
+            PositionSlider.Maximum = mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
+            TotalTimeTextBlock.Text = mediaElement.NaturalDuration.TimeSpan.ToString(@"mm\:ss");
+        }
+
+        public void SongAusSuche(string titel, string kuenstler)
         {
             ATitel.Visibility = Visibility.Visible;
             AKuenstler.Visibility = Visibility.Visible;
-            ATitel.Text= titel;
-            AKuenstler.Text= kuenstler;
+            ATitel.Text = titel;
+            AKuenstler.Text = kuenstler;
 
-            string audioUrl = "https://localhost:44351/api/stream" + Uri.EscapeDataString(kuenstler+" - "+titel);
+            string query = Uri.EscapeDataString(kuenstler + " - " + titel);
+            string audioUrl = $"https://localhost:44351/api/stream?filetoget={query}";
             mediaElement.Source = new Uri(audioUrl);
+            InitTimer();
+            mediaElement.Play();
         }
         private void Start_Click(object sender, RoutedEventArgs e)
         {
-           mediaElement.Play();
-            
+            if (mediaElement != null)
+            {
+                mediaElement.Play();
+            }
+
         }
 
-      
+
 
         private void Stop_Click(object sender, RoutedEventArgs e)
         {
-            mediaElement.Pause();
+            if (mediaElement != null)
+            {
+                mediaElement.Pause();
+            }
         }
 
         private void Lautstärke_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if(mediaElement != null)
+            if (mediaElement != null)
             {
                 mediaElement.Volume = e.NewValue;
             }
         }
 
-        private void PositionSlider_PreviewMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (mediaElement != null)
-            {
-                
-            }
-        }
+
 
         private void Restart_Click(object sender, RoutedEventArgs e)
         {
-            if(mediaElement != null)
+            if (mediaElement != null)
             {
-               
+                mediaElement.Position = TimeSpan.Zero;
             }
         }
 
@@ -95,7 +136,7 @@ namespace Client
             repeat = false;
         }
 
-       
+
 
         private void Benutzer_Click(object sender, RoutedEventArgs e)
         {
@@ -126,9 +167,34 @@ namespace Client
             mediaElement.Stop();
         }
 
-        public void SongChange(string name)
+
+        private void PositionSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            
+            if (isUsingSlider)
+            {
+                if (mediaElement != null)
+                {
+                    mediaElement.Position = TimeSpan.FromSeconds(PositionSlider.Value);
+                }
+            }
+        }
+
+
+
+        private void PositionSlider_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            isUsingSlider = true;
+        }
+
+
+
+        private void PositionSlider_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            isUsingSlider = false;
+            if (mediaElement != null)
+            {
+                mediaElement.Position = TimeSpan.FromSeconds(PositionSlider.Value);
+            }
         }
     }
 }

@@ -35,6 +35,40 @@ namespace Client
         }
         private async void Loginbutton_Click(object sender, RoutedEventArgs e)
         {
+
+            Login();
+
+
+        }
+
+        private async Task<bool> AuthentifiziereNutzer(string email, string passwort)
+        {
+            using(HttpClient client = new HttpClient())
+            {
+                string apiUrl = $"https://localhost:44351/api/login";
+                var LoginModel = new {Email =  email, Passwort = passwort};
+
+                HttpResponseMessage responseMessage = await client.PostAsJsonAsync(apiUrl,LoginModel);
+
+                return responseMessage.IsSuccessStatusCode;
+            }
+        }
+
+        private void Registerbutton_Click(object sender, RoutedEventArgs e)
+        {
+            _mainwindow.MainFrame.NavigationService.Navigate(new LoginPage_2(_mainwindow));
+        }
+
+        private void Password_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                Login();
+            }
+        }
+
+        private async void Login()
+        {
             string email = Email.Text;
             string passwort = Password.Password;
 
@@ -57,27 +91,6 @@ namespace Client
                     ErrorText.Text = "Nutzer nicht registriert!";
                 }
             }
-
-
-
-        }
-
-        private async Task<bool> AuthentifiziereNutzer(string email, string passwort)
-        {
-            using(HttpClient client = new HttpClient())
-            {
-                string apiUrl = $"https://localhost:44351/api/login";
-                var LoginModel = new {Email =  email, Passwort = passwort};
-
-                HttpResponseMessage responseMessage = await client.PostAsJsonAsync(apiUrl,LoginModel);
-
-                return responseMessage.IsSuccessStatusCode;
-            }
-        }
-
-        private void Registerbutton_Click(object sender, RoutedEventArgs e)
-        {
-            _mainwindow.MainFrame.NavigationService.Navigate(new LoginPage_2(_mainwindow));
         }
     }
 }

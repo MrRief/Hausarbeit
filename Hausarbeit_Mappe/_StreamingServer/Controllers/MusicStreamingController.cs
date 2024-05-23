@@ -33,7 +33,7 @@ namespace _StreamingServer.Controllers
         {
             try
             {
-                var list = db.Lieders.Select(lied => new 
+                var list = db.Lieders.Select(lied => new
                 {
                     Titel = lied.Titel,
                     Kuenstler = lied.Künstler.Name
@@ -52,41 +52,48 @@ namespace _StreamingServer.Controllers
         [Route("api/stream")]
         public IActionResult StreamAudio([FromQuery] string filetoget)
         {
-            
-            string folderpath = Path.Combine(Directory.GetCurrentDirectory(), "/Lieder");
-
-            string[] audioFiles = Directory.GetFiles(folderpath, "*.mp3")
-            .Where(file =>
+            try
             {
-                string fileName = Path.GetFileNameWithoutExtension(file);
-                return fileName.IndexOf(filetoget, StringComparison.OrdinalIgnoreCase) >= 0;
-            })
-            .ToArray();
-            if(audioFiles.Length == 0)
+
+
+
+                string folderpath = Path.Combine(Directory.GetCurrentDirectory(), "Lieder");
+
+                if (!Directory.Exists(folderpath))
+                {
+                    return NotFound();
+                }
+
+                string[] audioFiles = Directory.GetFiles(folderpath, "*.mp3")
+                .Where(file =>
+                {
+                    string fileName = Path.GetFileNameWithoutExtension(file);
+                    return fileName.IndexOf(filetoget, StringComparison.OrdinalIgnoreCase) >= 0;
+                })
+                .ToArray();
+                if (audioFiles.Length == 0)
+                {
+                    return NotFound("Audio file not found");
+                }
+                string filetostream = audioFiles[0];
+
+                var fileStream = new FileStream(filetostream, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+                return File(fileStream, "audio/mpeg");
+            }
+            catch(Exception ex)
             {
-                return NotFound("Audio file not found");
+                return BadRequest(ex.Message);
             }
-            string filetostream = audioFiles[0];
-
-            var fileStream = new FileStream(filetostream,FileMode.Open,FileAccess.Read,FileShare.Read);
-
-            return File(fileStream,"audio/mpeg");
-            }
-
-        private IActionResult RangeNotSatisfiable(long totalLength)
-        {
-            Response.StatusCode = (int)HttpStatusCode.RequestedRangeNotSatisfiable;
-            Response.Headers[HeaderNames.ContentRange] = new ContentRangeHeaderValue(totalLength).ToString();
-            return new EmptyResult();
         }
 
-
+        
 
         [HttpPost]
         [Route("api/create_user")]
         public IActionResult CreateUser([FromBody] Nutzer neuerNutzer)
         {
-           if(neuerNutzer == null)
+            if (neuerNutzer == null)
             {
                 return BadRequest("Ungültige Nutzerdaten");
             }
@@ -95,10 +102,10 @@ namespace _StreamingServer.Controllers
             db.SaveChanges();
             return Ok();
         }
-       
+
         [HttpPost]
         [Route("api/login")]
-        public IActionResult Login([FromBody]LoginModel request)
+        public IActionResult Login([FromBody] LoginModel request)
         {
             Nutzer nutzerindb = db.Nutzers.SingleOrDefault(x => x.Email == request.Email);
 
@@ -109,14 +116,14 @@ namespace _StreamingServer.Controllers
 
             if (nutzerindb.Passwort == request.Passwort)
             {
-                return Ok();
+                return Ok(nutzerindb.NutzerId);
             }
             return NotFound();
         }
-        public class LoginModel 
+        public class LoginModel
         {
             public string? Email { get; set; }
-            public string? Passwort { get; set;}
+            public string? Passwort { get; set; }
         }
 
     }

@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:Client"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" Background="White"
-             MaxWidth="1024" MaxHeight="768">
+             MaxWidth="1024" MaxHeight="768"
+             >
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"></ColumnDefinition>
@@ -34,7 +35,7 @@
         <PasswordBox Name="P1" BorderBrush="Black" Grid.Row="3" Grid.Column="1"></PasswordBox>
         <PasswordBox Name="P2" BorderBrush="Black" Grid.Row="4" Grid.Column="1"></PasswordBox>
 
-        <TextBlock Name="Error" Grid.Row="5" Foreground="Red"></TextBlock>
+        <TextBlock Visibility="Collapsed" Name="Error" Grid.Row="5" Foreground="Red"></TextBlock>
         
         <Button Click="Registrieren_Click" Name="Registrieren" Content="Registrieren" Grid.Row="6" Grid.Column="1"></Button>
         <Button Click="Zurueck_Click" Name="Zurueck" Content="Zurück" Grid.Row="6" Grid.Column="0"></Button>
