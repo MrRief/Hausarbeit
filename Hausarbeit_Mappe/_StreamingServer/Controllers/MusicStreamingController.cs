@@ -84,35 +84,21 @@ namespace _StreamingServer.Controllers
 
         [HttpPost]
         [Route("api/create_user")]
-        public IActionResult CreateUser(string name, string vorname, string email, string passwort)
+        public IActionResult CreateUser([FromBody] Nutzer neuerNutzer)
         {
-            Nutzer nutzer = new Nutzer();
-            nutzer.Name = name;
-            nutzer.Vorname = vorname;
-            nutzer.Email = email;
-            nutzer.Passwort = passwort;
-
-            db.Nutzers.Add(nutzer);
-            db.SaveChanges();
-            return Ok(nutzer.NutzerId);
-        }
-        [HttpGet]
-        [Route("api/user")]
-
-        public IActionResult GetUser(int id)
-        {
-            Nutzer nutzerindb = db.Nutzers.SingleOrDefault(x => x.NutzerId == id);
-
-            if (nutzerindb == null)
+           if(neuerNutzer == null)
             {
-                return NotFound();
+                return BadRequest("Ungültige Nutzerdaten");
             }
 
-            return Ok(nutzerindb);
+            db.Nutzers.Add(neuerNutzer);
+            db.SaveChanges();
+            return Ok();
         }
+       
         [HttpPost]
         [Route("api/login")]
-        public IActionResult Login(LoginModel request)
+        public IActionResult Login([FromBody]LoginModel request)
         {
             Nutzer nutzerindb = db.Nutzers.SingleOrDefault(x => x.Email == request.Email);
 

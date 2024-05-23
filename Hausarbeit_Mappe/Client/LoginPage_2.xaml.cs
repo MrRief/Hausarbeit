@@ -33,37 +33,56 @@ namespace Client
 
         private async void Registrieren_Click(object sender, RoutedEventArgs e)
         {
-            if(P1.Password == P2.Password)
+            if(string.IsNullOrEmpty(Name.Text) || string.IsNullOrEmpty(Vorname.Text) || string.IsNullOrEmpty(Email.Text) || string.IsNullOrEmpty(P1.Password) || string.IsNullOrEmpty(P2.Password))
             {
-                //Registrieren
-              
-
-                using (client)
-                {
-                    try
-                    {
-                        string jsonData = $"{{\"name\": \"{Name.Text}\", \"vorname\": \"{Vorname.Text}\", \"email\": \"{Email.Text}\", \"passwort\": \"{P1.Password}\"}}";
-                        var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-                        HttpResponseMessage response = await client.PostAsJsonAsync("api/user/createuser", content);
-                        if(response.IsSuccessStatusCode)
-                        {
-                            string responseBody = await response.Content.ReadAsStringAsync();
-                            Error.Text = "Benutzer erfolgreich erstellt.";
-                        }
-                        else
-                        {
-                            Error.Text = "Fehler";
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Error.Text = "Fehler:" + ex.Message;
-                    }
-                }
+               Error.Visibility = Visibility.Visible;
+                Error.Text = "Es sind nicht alle Felder ausgefüllt!";
             }
             else
             {
-                Error.Text = "Passwörter stimmen nicht überein";
+                if (P1.Password == P2.Password)
+                {
+                    string name = Name.Text;
+                    string vorname = Vorname.Text;
+                    string email = Email.Text;
+                    string passwort = P1.Password;
+
+                    bool iscreated = await ErstelleNutzer(name, vorname, email, passwort);
+
+                    if (iscreated)
+                    {
+                        _mainWindow.MainFrame.NavigationService.Navigate(new LoginPage_1(_mainWindow));
+                    }
+                    else
+                    {
+                        Error.Visibility = Visibility.Visible;
+                        Error.Text = "Nutzer wurde nicht erfolgreich erstellt!";
+                    }
+                }
+                else
+                {
+                    Error.Visibility = Visibility.Visible;
+                    Error.Text = "Passwörter stimmen nicht überein!";
+                }
+            }
+            
+        }
+
+        private async Task<bool> ErstelleNutzer(string name, string vorname, string email, string passwort)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                string apiUrl = "https://localhost:44351/api/create_user";
+                var neuerNutzer = new
+                {
+                    Name = name,
+                    Vorname = vorname,
+                    Email = email,
+                    Passwort = passwort
+                };
+                HttpResponseMessage response = await client.PostAsJsonAsync(apiUrl, neuerNutzer);
+
+                return response.IsSuccessStatusCode;
             }
         }
 

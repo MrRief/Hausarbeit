@@ -36,7 +36,7 @@
 
         <TextBlock Name="Error" Grid.Row="5" Foreground="Red"></TextBlock>
         
-        <Button Click="Registrieren_Click" Name="Registrieren" Content="Registrieren" Grid.Row="6"></Button>
-        <Button Click="Zurueck_Click" Name="Zurueck" Content="Zurück" Grid.Row="6" Grid.Column="1"></Button>
+        <Button Click="Registrieren_Click" Name="Registrieren" Content="Registrieren" Grid.Row="6" Grid.Column="1"></Button>
+        <Button Click="Zurueck_Click" Name="Zurueck" Content="Zurück" Grid.Row="6" Grid.Column="0"></Button>
     </Grid>
 </UserControl>

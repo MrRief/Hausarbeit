@@ -40,6 +40,7 @@ namespace Client
 
             if (string.IsNullOrEmpty(passwort) || string.IsNullOrEmpty(email))
             {
+                ErrorText.Visibility = Visibility.Visible;
                 ErrorText.Text = "Email oder Passwort nicht eingegeben!";
             }
             else
@@ -52,6 +53,7 @@ namespace Client
                 }
                 else
                 {
+                    ErrorText.Visibility = Visibility.Visible;
                     ErrorText.Text = "Nutzer nicht registriert!";
                 }
             }
