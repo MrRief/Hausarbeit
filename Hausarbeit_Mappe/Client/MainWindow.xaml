@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
+       
+        Title="MusicStreaming" Height="450" Width="800"
         MaxWidth="1024" MaxHeight="768"
         MinHeight="450" MinWidth="800">
     <Grid>

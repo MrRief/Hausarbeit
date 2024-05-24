@@ -33,39 +33,49 @@ namespace Client
 
         private async void Registrieren_Click(object sender, RoutedEventArgs e)
         {
-            if(string.IsNullOrEmpty(Name.Text) || string.IsNullOrEmpty(Vorname.Text) || string.IsNullOrEmpty(Email.Text) || string.IsNullOrEmpty(P1.Password) || string.IsNullOrEmpty(P2.Password))
+            if (string.IsNullOrEmpty(Name.Text) || string.IsNullOrEmpty(Vorname.Text) || string.IsNullOrEmpty(Email.Text) || string.IsNullOrEmpty(P1.Password) || string.IsNullOrEmpty(P2.Password))
             {
-               Error.Visibility = Visibility.Visible;
+                Error.Visibility = Visibility.Visible;
                 Error.Text = "Es sind nicht alle Felder ausgefüllt!";
             }
             else
             {
-                if (P1.Password == P2.Password)
+                if (Name.Text.Length > 20 || Vorname.Text.Length > 20 || Email.Text.Length > 20 || P1.Password.Length > 20 || P2.Password.Length > 20)
                 {
-                    string name = Name.Text;
-                    string vorname = Vorname.Text;
-                    string email = Email.Text;
-                    string passwort = P1.Password;
+                    Error.Visibility = Visibility.Visible;
+                    Error.Text = "Die eingegebenen Werte sollten nicht länger als 20 Chars lang sein!";
+                }
+                else
+                {
 
-                    bool iscreated = await ErstelleNutzer(name, vorname, email, passwort);
 
-                    if (iscreated)
+                    if (P1.Password == P2.Password)
                     {
-                        _mainWindow.MainFrame.NavigationService.Navigate(new LoginPage_1(_mainWindow));
+                        string name = Name.Text;
+                        string vorname = Vorname.Text;
+                        string email = Email.Text;
+                        string passwort = P1.Password;
+
+                        bool iscreated = await ErstelleNutzer(name, vorname, email, passwort);
+
+                        if (iscreated)
+                        {
+                            _mainWindow.MainFrame.NavigationService.Navigate(new LoginPage_1(_mainWindow));
+                        }
+                        else
+                        {
+                            Error.Visibility = Visibility.Visible;
+                            Error.Text = "Nutzer wurde nicht erfolgreich erstellt!";
+                        }
                     }
                     else
                     {
                         Error.Visibility = Visibility.Visible;
-                        Error.Text = "Nutzer wurde nicht erfolgreich erstellt!";
+                        Error.Text = "Passwörter stimmen nicht überein!";
                     }
                 }
-                else
-                {
-                    Error.Visibility = Visibility.Visible;
-                    Error.Text = "Passwörter stimmen nicht überein!";
-                }
             }
-            
+
         }
 
         private async Task<bool> ErstelleNutzer(string name, string vorname, string email, string passwort)
@@ -81,6 +91,8 @@ namespace Client
                     Passwort = passwort
                 };
                 HttpResponseMessage response = await client.PostAsJsonAsync(apiUrl, neuerNutzer);
+
+
 
                 return response.IsSuccessStatusCode;
             }

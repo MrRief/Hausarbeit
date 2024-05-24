@@ -24,6 +24,7 @@ namespace Client
     {
         public readonly HttpClient client;
         private MainWindow _mainwindow;
+        private int UserId;
         public LoginPage_1(MainWindow wnd)
         {
             InitializeComponent();
@@ -49,7 +50,7 @@ namespace Client
                 var LoginModel = new {Email =  email, Passwort = passwort};
 
                 HttpResponseMessage responseMessage = await client.PostAsJsonAsync(apiUrl,LoginModel);
-
+                UserId = await responseMessage.Content.ReadAsAsync<int>();
                 return responseMessage.IsSuccessStatusCode;
             }
         }
@@ -83,7 +84,7 @@ namespace Client
                 bool istregistriert = await AuthentifiziereNutzer(email, passwort);
                 if (istregistriert)
                 {
-                    _mainwindow.MainFrame.NavigationService.Navigate(new MainPage(_mainwindow));
+                    _mainwindow.MainFrame.NavigationService.Navigate(new MainPage(_mainwindow,UserId));
                 }
                 else
                 {

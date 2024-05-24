@@ -9,42 +9,46 @@
              d:DesignHeight="450" d:DesignWidth="800"
              MaxWidth="1024" MaxHeight="768"
              >
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-        </Grid.RowDefinitions>
-
-        <TextBlock Text="Name:"></TextBlock>
-        <TextBlock Text="Vorname" Grid.Row="1"></TextBlock>
-        <TextBlock Text="Email" Grid.Row="2"></TextBlock>
-        <TextBlock Text="Passwort:" Grid.Row="3"></TextBlock>
-        <TextBlock Text="Neues Passwort:" Grid.Row="4"></TextBlock>
-
-        <TextBox Name="Name" BorderBrush="Black"  Grid.Column="1"></TextBox>
-        <TextBox Name="Vorname" BorderBrush="Black" Grid.Row="1" Grid.Column="1"></TextBox>
-        <TextBox Name="Email" BorderBrush="Black" Grid.Row="2" Grid.Column="1"></TextBox>
-        <PasswordBox Name="P1" BorderBrush="Black" Grid.Row="3" Grid.Column="1"></PasswordBox>
-        <PasswordBox Name="P2" BorderBrush="Black" Grid.Row="4" Grid.Column="1"></PasswordBox>
-        
-        <Grid Grid.Row="5" Grid.ColumnSpan="2">
+    <ScrollViewer Margin="5" VerticalScrollBarVisibility="Auto">
+        <Grid Margin="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button x:Name="Aendern" Content="Daten ändern" Click="Aendern_Click"></Button>
-            <Button x:Name="Loeschen" Content="Konto löschen" Grid.Column="1" Click="Loeschen_Click"></Button>
-            <Button x:Name="Ausloggen" Grid.Column="2" Content="Ausloggen" Click="Ausloggen_Click"></Button>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Name:"></TextBlock>
+            <TextBlock Text="Vorname" Grid.Row="1"></TextBlock>
+            <TextBlock Text="Email" Grid.Row="2"></TextBlock>
+            <TextBlock Text="Passwort:" Grid.Row="3"></TextBlock>
+            <TextBlock Text="Neues Passwort:" Grid.Row="4"></TextBlock>
+
+            <TextBox Name="Name" BorderBrush="Black"  Grid.Column="1"></TextBox>
+            <TextBox Name="Vorname" BorderBrush="Black" Grid.Row="1" Grid.Column="1"></TextBox>
+            <TextBox Name="Email" BorderBrush="Black" Grid.Row="2" Grid.Column="1"></TextBox>
+            <PasswordBox Name="AltesPasswort" BorderBrush="Black" Grid.Row="3" Grid.Column="1"></PasswordBox>
+            <PasswordBox Name="NeusePasswort" BorderBrush="Black" Grid.Row="4" Grid.Column="1"></PasswordBox>
+
+            <Grid Grid.Row="5" Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="Aendern" Content="Daten ändern" Click="Aendern_Click"></Button>
+                <Button x:Name="Loeschen" Content="Konto löschen" Grid.Column="1" Click="Loeschen_Click"></Button>
+                <Button x:Name="Ausloggen" Grid.Column="2" Content="Ausloggen" Click="Ausloggen_Click"></Button>
+            </Grid>
+            <TextBlock TextWrapping="Wrap" x:Name="Error" Foreground="Red" Visibility="Collapsed" Grid.Row="6" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+
         </Grid>
-        
-    </Grid>
+    </ScrollViewer>
 </UserControl>

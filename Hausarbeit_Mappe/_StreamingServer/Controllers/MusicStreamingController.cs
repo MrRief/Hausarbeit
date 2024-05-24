@@ -48,15 +48,45 @@ namespace _StreamingServer.Controllers
             }
 
         }
+        [HttpPost]
+        [Route("api/get_user")]
+        public IActionResult GetUser([FromBody] int id)
+        {
+            try
+            {
+                Nutzer nutzer = db.Nutzers.SingleOrDefault(nutzer => nutzer.NutzerId == id);
+                if (nutzer == null)
+                {
+                    return NotFound();
+                }
+                NutzerDTO nutzerdto = new NutzerDTO
+                {
+                    NutzerId = nutzer.NutzerId,
+                    Name = nutzer.Name,
+                    Vorname = nutzer.Vorname,
+                    Email = nutzer.Email,
+                };
+                return Ok(nutzerdto);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        public class NutzerDTO
+        {
+            public int NutzerId { get; set; }
+            public string Name { get; set; }
+            public string Vorname { get; set; }
+            public string Email { get; set; }
+
+        }
         [HttpGet]
         [Route("api/stream")]
         public IActionResult StreamAudio([FromQuery] string filetoget)
         {
             try
             {
-
-
-
                 string folderpath = Path.Combine(Directory.GetCurrentDirectory(), "Lieder");
 
                 if (!Directory.Exists(folderpath))
@@ -81,49 +111,196 @@ namespace _StreamingServer.Controllers
 
                 return File(fileStream, "audio/mpeg");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
 
-        
+
 
         [HttpPost]
         [Route("api/create_user")]
         public IActionResult CreateUser([FromBody] Nutzer neuerNutzer)
         {
-            if (neuerNutzer == null)
+            try
             {
-                return BadRequest("Ungültige Nutzerdaten");
+                if (neuerNutzer == null)
+                {
+                    return BadRequest("Ungültige Nutzerdaten");
+                }
+
+                db.Nutzers.Add(neuerNutzer);
+                db.SaveChanges();
+                return Ok();
             }
-
-            db.Nutzers.Add(neuerNutzer);
-            db.SaveChanges();
-            return Ok();
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
+        [HttpPost]
+        [Route("api/update_user")]
+        public IActionResult UpdateUser([FromBody] UpdateNutzerDTO updatenutzer)
+        {
+            try
+            {
+                Nutzer nutzer = db.Nutzers.FirstOrDefault(x => x.NutzerId == updatenutzer.NutzerId);
+                if (nutzer == null)
+                {
+                    return NotFound();
+                }
+                if (!string.IsNullOrEmpty(updatenutzer.OldPassword))
+                {
+                    if (nutzer.Passwort != updatenutzer.OldPassword)
+                    {
+                        return BadRequest("Passwort nicht korrekt!");
+                    }
+                    if (!string.IsNullOrEmpty(updatenutzer.NewPassword))
+                    {
+                        nutzer.Passwort = updatenutzer.NewPassword;
+                    }
+                }
+                if (!string.IsNullOrEmpty(updatenutzer.Name))
+                {
+                    nutzer.Name = updatenutzer.Name;
 
+                }
+                if (!string.IsNullOrEmpty(updatenutzer.Vorname))
+                {
+                    nutzer.Vorname = updatenutzer.Vorname;
+
+                }
+                if (!string.IsNullOrEmpty(updatenutzer.Email))
+                {
+                    nutzer.Email = updatenutzer.Email;
+
+                }
+                db.SaveChanges();
+                return Ok("Daten wurden erfolgreich geändert.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        public class UpdateNutzerDTO
+        {
+            public int NutzerId { get; set; }
+            public string Name { get; set; }
+            public string Vorname { get; set; }
+            public string Email { get; set; }
+
+            public string OldPassword { get; set; }
+            public string NewPassword { get; set; }
+        }
+        [HttpPost]
+        [Route("api/delete_user")]
+        public IActionResult DeleteUser([FromBody] int id)
+        {
+            try
+            {
+
+                Nutzer delete = db.Nutzers.SingleOrDefault(x => x.NutzerId == id);
+                if (delete == null)
+                {
+                    return NotFound();
+                }
+                db.Nutzers.Remove(delete);
+                db.SaveChanges();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpPost]
         [Route("api/login")]
         public IActionResult Login([FromBody] LoginModel request)
         {
-            Nutzer nutzerindb = db.Nutzers.SingleOrDefault(x => x.Email == request.Email);
-
-            if (nutzerindb == null)
+            try
             {
+
+
+                Nutzer nutzerindb = db.Nutzers.SingleOrDefault(x => x.Email == request.Email);
+
+                if (nutzerindb == null)
+                {
+                    return NotFound();
+                }
+
+                if (nutzerindb.Passwort == request.Passwort)
+                {
+                    return Ok(nutzerindb.NutzerId);
+                }
                 return NotFound();
             }
-
-            if (nutzerindb.Passwort == request.Passwort)
+            catch (Exception ex)
             {
-                return Ok(nutzerindb.NutzerId);
+                return BadRequest(ex.Message);
             }
-            return NotFound();
         }
         public class LoginModel
         {
             public string? Email { get; set; }
             public string? Passwort { get; set; }
+        }
+        [HttpPost]
+        [Route("api/favorite")]
+        public IActionResult Favorite([FromBody] bool favorit, int nutzerid, int liedid)
+        {
+            try
+            {
+
+                Nutzer nutzer = db.Nutzers.FirstOrDefault(x => x.NutzerId == nutzerid);
+                Lieder lied = db.Lieders.FirstOrDefault(x => x.Id == liedid);
+
+                if (nutzer == null || lied == null)
+                {
+                    return NotFound();
+                }
+                if (favorit)
+                {
+                    if (!nutzer.Lieds.Contains(lied))
+                    {
+                        nutzer.Lieds.Add(lied);
+                    }
+                }
+                else
+                {
+                    if (nutzer.Lieds.Contains(lied))
+                    {
+                        nutzer.Lieds.Remove(lied);
+
+                    }
+                }
+                db.SaveChanges();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet]
+        [Route("api/get_songid")]
+        public IActionResult GetSong([FromQuery] string titel, string kuenstler)
+        {
+            try
+            {
+                int kid = db.Künstlers.FirstOrDefault(x => x.Name == kuenstler).KünstlerId;
+                Lieder lieder = db.Lieders.FirstOrDefault(x => x.Titel == titel && x.KünstlerId == kid);
+                if (lieder == null)
+                {
+                    return NotFound();
+                }
+                return Ok(lieder.Id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
     }
