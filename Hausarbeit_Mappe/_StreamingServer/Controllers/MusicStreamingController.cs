@@ -248,7 +248,7 @@ namespace _StreamingServer.Controllers
         }
         [HttpPost]
         [Route("api/favorite")]
-        public IActionResult Favorite([FromBody] bool favorit, int nutzerid, int liedid)
+        public IActionResult Favorite( bool favorit, int nutzerid, int liedid)
         {
             try
             {
@@ -276,7 +276,7 @@ namespace _StreamingServer.Controllers
                     }
                 }
                 db.SaveChanges();
-                return Ok();
+                return Ok("Favoritenstatus geändert!");
             }
             catch (Exception ex)
             {
@@ -284,13 +284,68 @@ namespace _StreamingServer.Controllers
             }
         }
         [HttpGet]
-        [Route("api/get_songid")]
-        public IActionResult GetSong([FromQuery] string titel, string kuenstler)
+        [Route("api/is_favorite")]
+        public IActionResult IsFavorite([FromQuery] int nutzerid, [FromQuery] int liedid)
         {
             try
             {
-                int kid = db.Künstlers.FirstOrDefault(x => x.Name == kuenstler).KünstlerId;
-                Lieder lieder = db.Lieders.FirstOrDefault(x => x.Titel == titel && x.KünstlerId == kid);
+                
+                Nutzer nutzer = db.Nutzers.FirstOrDefault(x => x.NutzerId == nutzerid);
+
+                if (nutzer == null)
+                {
+                    return NotFound("User not found.");
+                }
+                
+                foreach(var favorit in nutzer.Lieds)
+                {
+                    Console.WriteLine($"Favorit song id:{favorit}");
+                }
+
+                bool isFavorite = nutzer.Lieds.Any(l => l.Id == liedid);
+
+                return Ok(isFavorite);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("api/get_favoritedb")]
+        public IActionResult GetFavoritesInDb([FromQuery] int nutzerid)
+        {
+            try
+            {
+                Nutzer nutzer = db.Nutzers.Include(z => z.Lieds).ThenInclude(y=> y.Künstler).FirstOrDefault(x => x.NutzerId == nutzerid);
+
+                if (nutzer == null)
+                {
+                    return NotFound();
+                }
+                var list = nutzer.Lieds.Select(x => new
+                {
+                    Titel = x.Titel,
+                    Kuenstler = x.Künstler?.Name
+                }).ToList();
+
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+        [HttpGet]
+        [Route("api/get_songid")]
+        public IActionResult GetSong([FromQuery] string titel,[FromQuery] string kuenstler)
+        {
+            try
+            {
+                Künstler kid = db.Künstlers.FirstOrDefault(x => x.Name == kuenstler);
+                Lieder lieder = db.Lieders.FirstOrDefault(x => x.Titel == titel && x.KünstlerId == kid.KünstlerId);
                 if (lieder == null)
                 {
                     return NotFound();

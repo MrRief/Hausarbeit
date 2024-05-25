@@ -33,6 +33,7 @@ namespace Client
         private bool isUsingSlider = false;
         private DispatcherTimer _timer;
         private int UserID;
+        private bool donttrigger = false;
 
 
         public MainPage(MainWindow wnd, int UID)
@@ -41,7 +42,7 @@ namespace Client
             ContentFrame.NavigationService.Navigate(new _Suche(this));
             _mainWindow = wnd;
             UserID = UID;
-            Favorit.Visibility = Visibility.Collapsed;
+
 
         }
 
@@ -80,7 +81,7 @@ namespace Client
             TotalTimeTextBlock.Text = mediaElement.NaturalDuration.TimeSpan.ToString(@"mm\:ss");
         }
 
-        public void SongAusSuche(string titel, string kuenstler)
+        public async void SongAusSuche(string titel, string kuenstler)
         {
             ATitel.Visibility = Visibility.Visible;
             AKuenstler.Visibility = Visibility.Visible;
@@ -90,8 +91,13 @@ namespace Client
             string query = Uri.EscapeDataString(kuenstler + " - " + titel);
             string audioUrl = $"https://localhost:44351/api/stream?filetoget={query}";
             mediaElement.Source = new Uri(audioUrl);
-
-            Favorit.Visibility = Visibility.Collapsed;
+            Favorit.Visibility = Visibility.Visible;
+            if (await IsFavorite())
+            {
+                donttrigger = true;
+            }
+            Favorit.IsChecked = donttrigger;
+            donttrigger = false;
             InitTimer();
             mediaElement.Play();
         }
@@ -152,7 +158,7 @@ namespace Client
 
         private void Favoriten_Click(object sender, RoutedEventArgs e)
         {
-            ContentFrame.NavigationService.Navigate(new _Favoriten(UserID));
+            ContentFrame.NavigationService.Navigate(new _Favoriten(this,UserID));
 
         }
 
@@ -205,19 +211,32 @@ namespace Client
 
         private void Favorit_Checked(object sender, RoutedEventArgs e)
         {
-            FavoritHinzufuegen(true);
+            if (!donttrigger)
+            {
+                FavoritHinzufuegen(true, ATitel.Text, AKuenstler.Text);
+
+
+            }
+        }
+        private void Favorit_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (!donttrigger)
+            {
+                FavoritHinzufuegen(false,ATitel.Text,AKuenstler.Text);
+
+            }
         }
 
-        private async void FavoritHinzufuegen(bool isFavorite)
+        public async void FavoritHinzufuegen(bool isFavorite,string titel,string kuenstler)
         {
-            int liedid = await GetSongID();
+            int liedid = await GetSongID(titel,kuenstler);
             try
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    string apiUrl = "https://localhost:44351/api/favorite";
-                    var content = new StringContent(JsonConvert.SerializeObject(new { favorit = isFavorite, nutzerid = UserID, liedid = liedid }), Encoding.UTF8, "application/json");
-                    HttpResponseMessage response = await client.PostAsync(apiUrl, content);
+                    string apiUrl = $"https://localhost:44351/api/favorite?favorit={isFavorite}&nutzerid={UserID}&liedid={liedid}";
+                    HttpResponseMessage response = await client.PostAsync(apiUrl, null);
+
 
                 }
             }
@@ -227,17 +246,19 @@ namespace Client
             }
         }
 
-        private async Task<int> GetSongID()
+        private async Task<int> GetSongID(string titel,string kuenstler)
         {
-            string titel = ATitel.Text;
-            string kuenstler = AKuenstler.Text;
+            string _titel = Uri.EscapeDataString(titel);
+            string _kuenstler = Uri.EscapeDataString(kuenstler);
             try
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    string apiUrl = "https://localhost:44351/api/get_songid";
-                    var content = new StringContent(JsonConvert.SerializeObject(new { titel = titel, kuenstler = kuenstler }), Encoding.UTF8, "application/json");
-                    HttpResponseMessage response = await client.PostAsync(apiUrl, content);
+                    string apiUrl = "https://localhost:44351/api/get_songid?titel=" + titel + "&kuenstler=" + kuenstler;
+                    
+
+
+                    HttpResponseMessage response = await client.GetAsync(apiUrl);
                     return await response.Content.ReadAsAsync<int>();
 
 
@@ -248,11 +269,26 @@ namespace Client
                 throw;
             }
         }
-
-        private void Favorit_Unchecked(object sender, RoutedEventArgs e)
+        private async Task<bool> IsFavorite()
         {
-            FavoritHinzufuegen(false);
+            int liedid = await GetSongID(ATitel.Text,AKuenstler.Text);
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    string apiUrl = "https://localhost:44351/api/get_favorite?nutzerid=" + UserID + "&liedid=" + liedid;
+                    HttpResponseMessage response = await client.GetAsync(apiUrl);
+                    return await response.Content.ReadAsAsync<bool>();
+
+
+                }
+            }
+            catch
+            {
+                throw;
+            }
         }
+
 
 
     }
