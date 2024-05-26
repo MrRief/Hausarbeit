@@ -10,6 +10,8 @@ using Microsoft.Net.Http.Headers;
 using System.IO;
 using Azure;
 using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.Data.SqlClient;
+using static _StreamingServer.Controllers.MusicStreamingController;
 
 namespace _StreamingServer.Controllers
 {
@@ -47,6 +49,25 @@ namespace _StreamingServer.Controllers
                 return BadRequest(ex.Message);
             }
 
+        }
+        [HttpGet]
+        [Route("api/get_songid")]
+        public IActionResult GetSong([FromQuery] string titel, [FromQuery] string kuenstler)
+        {
+            try
+            {
+                Künstler kid = db.Künstlers.FirstOrDefault(x => x.Name == kuenstler);
+                Lieder lieder = db.Lieders.FirstOrDefault(x => x.Titel == titel && x.KünstlerId == kid.KünstlerId);
+                if (lieder == null)
+                {
+                    return NotFound();
+                }
+                return Ok(lieder.Id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPost]
         [Route("api/get_user")]
@@ -129,10 +150,14 @@ namespace _StreamingServer.Controllers
                 {
                     return BadRequest("Ungültige Nutzerdaten");
                 }
-
-                db.Nutzers.Add(neuerNutzer);
-                db.SaveChanges();
-                return Ok();
+                Nutzer nutzer = db.Nutzers.FirstOrDefault(x => x.Email == neuerNutzer.Email);
+                if (nutzer == null)
+                {
+                    db.Nutzers.Add(neuerNutzer);
+                    db.SaveChanges();
+                    return Ok();
+                }
+                return BadRequest("Email bereits vergeben");
             }
             catch (Exception ex)
             {
@@ -150,6 +175,13 @@ namespace _StreamingServer.Controllers
                 {
                     return NotFound();
                 }
+
+                var emailInUse = db.Nutzers.Any(x => x.Email == updatenutzer.Email && x.NutzerId != updatenutzer.NutzerId);
+                if (emailInUse)
+                {
+                    return BadRequest("Email bereits vergeben.");
+                }
+
                 if (!string.IsNullOrEmpty(updatenutzer.OldPassword))
                 {
                     if (nutzer.Passwort != updatenutzer.OldPassword)
@@ -247,41 +279,61 @@ namespace _StreamingServer.Controllers
             public string? Passwort { get; set; }
         }
         [HttpPost]
-        [Route("api/favorite")]
-        public IActionResult Favorite( bool favorit, int nutzerid, int liedid)
+        [Route("api/add_favorite")]
+        public IActionResult Favorite(int nutzerid, int liedid)
         {
             try
             {
+                
+                Nutzer nutzer = db.Nutzers.Include(x => x.Lieds).FirstOrDefault(x => x.NutzerId == nutzerid);
 
-                Nutzer nutzer = db.Nutzers.FirstOrDefault(x => x.NutzerId == nutzerid);
-                Lieder lied = db.Lieders.FirstOrDefault(x => x.Id == liedid);
+                Lieder lied = db.Lieders.Include(x => x.Nutzers).FirstOrDefault(x => x.Id == liedid);
 
                 if (nutzer == null || lied == null)
                 {
                     return NotFound();
                 }
-                if (favorit)
-                {
-                    if (!nutzer.Lieds.Contains(lied))
-                    {
-                        nutzer.Lieds.Add(lied);
-                        db.SaveChanges();
-                        return Ok("Favorit hinzugefügt");
-                    }
-                }
-                else
-                {
-                    if (nutzer.Lieds.Contains(lied))
-                    {
-                        nutzer.Lieds.Remove(lied);
-                        db.SaveChanges();
-                        return Ok("Favorit entfernt");
 
-                    }
+                if (!nutzer.Lieds.Contains(lied))
+                {
+                    nutzer.Lieds.Add(lied);
                 }
-                return BadRequest("Nichts geändert");
-                
-                
+
+                db.SaveChanges();
+                return Ok("Favorit hinzugefügt");
+            }
+            
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception Message: " + ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("api/del_favorite")]
+        public IActionResult DelFavorite(int nutzerid, int liedid)
+        {
+            try
+            {
+
+                Nutzer nutzer = db.Nutzers.Include(x => x.Lieds).FirstOrDefault(x => x.NutzerId == nutzerid);
+
+                Lieder lied = db.Lieders.Include(x => x.Nutzers).FirstOrDefault(x => x.Id == liedid);
+                if (nutzer == null || lied == null)
+                {
+                    return NotFound();
+                }
+                if (nutzer.Lieds.Contains(lied))
+                {
+                    nutzer.Lieds.Remove(lied);
+
+                }
+               
+                db.SaveChanges();
+                return Ok("Favorit entfernt");
+
+
             }
             catch (Exception ex)
             {
@@ -295,8 +347,9 @@ namespace _StreamingServer.Controllers
             try
             {
                 bool isFavorite = false;
-                Nutzer nutzer = db.Nutzers.FirstOrDefault(x => x.NutzerId == nutzerid);
-                Lieder lied = db.Lieders.FirstOrDefault(x => x.Id == liedid);
+                Nutzer nutzer = db.Nutzers.Include(x => x.Lieds).FirstOrDefault(x => x.NutzerId == nutzerid);
+
+                Lieder lied = db.Lieders.Include(x => x.Nutzers).FirstOrDefault(x => x.Id == liedid);
 
                 if (nutzer == null || lied == null)
                 {
@@ -307,13 +360,7 @@ namespace _StreamingServer.Controllers
                     isFavorite = true;
                 }
                 return Ok(isFavorite);
-                
-                
-
-                
-               
-
-                return Ok(isFavoriteL);
+              
             }
             catch (Exception ex)
             {
@@ -327,7 +374,7 @@ namespace _StreamingServer.Controllers
         {
             try
             {
-                Nutzer nutzer = db.Nutzers.Include(z => z.Lieds).ThenInclude(y=> y.Künstler).FirstOrDefault(x => x.NutzerId == nutzerid);
+                Nutzer nutzer = db.Nutzers.Include(x => x.Lieds).ThenInclude(x=> x.Künstler).FirstOrDefault(x => x.NutzerId == nutzerid);
 
                 if (nutzer == null)
                 {
@@ -347,25 +394,122 @@ namespace _StreamingServer.Controllers
             }
 
         }
-        [HttpGet]
-        [Route("api/get_songid")]
-        public IActionResult GetSong([FromQuery] string titel,[FromQuery] string kuenstler)
+        
+        [HttpPost]
+        [Route("api/create_playlist")]
+        public IActionResult CreatePlaylist([FromBody] CreatePlaylistDTO playlist)
         {
             try
             {
-                Künstler kid = db.Künstlers.FirstOrDefault(x => x.Name == kuenstler);
-                Lieder lieder = db.Lieders.FirstOrDefault(x => x.Titel == titel && x.KünstlerId == kid.KünstlerId);
-                if (lieder == null)
+                Nutzer nutzer = db.Nutzers.FirstOrDefault(x => x.NutzerId == playlist.NutzerID);
+                if (nutzer == null)
                 {
-                    return NotFound();
+                    return NotFound("Nutzer nicht gefunden");
                 }
-                return Ok(lieder.Id);
+               
+
+                if (db.Playlists.Any(x=> x.Name == playlist.name && x.NutzerId == playlist.NutzerID))
+                {
+                    return BadRequest("Eine Playlist mit diesem Namen existiert bereits.");
+                }
+                Playlist neuePlaylist = new Playlist 
+                {
+                    Name = playlist.name,
+                    NutzerId = playlist.NutzerID,
+                };
+                db.Playlists.Add(neuePlaylist);
+                db.SaveChanges();
+               
+                return Ok("Playlist erstellt.");
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
+        public class CreatePlaylistDTO
+        {
+           public int NutzerID { get; set; }
+            public string name { get; set; }
+        }
+       
+        [HttpGet]
+        [Route("api/get_playlists")]
+        public IActionResult GetPlaylists([FromQuery] int nutzerid)
+        {
+            try
+            {
+                Nutzer nutzer = db.Nutzers.Include(x => x.Playlists).ThenInclude(x => x.Lieds).ThenInclude(x => x.Künstler).FirstOrDefault(x => x.NutzerId == nutzerid);
+
+                if (nutzer == null)
+                {
+                    return NotFound("User not found");
+                }
+
+                var playlists = nutzer.Playlists.Select(x => new PlaylistDTO
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Lieder = x.Lieds.Select(x => new LiedDTO
+                    {
+                        Id = x.Id,
+                        Titel = x.Titel,
+                        Kuenstler = x.Künstler.Name
+                    }).ToList()
+                }).ToList();
+
+                return Ok(playlists);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        public class PlaylistDTO
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public List<LiedDTO> Lieder { get; set; }
+        }
+        public class LiedDTO
+        {
+            public int Id { get; set; }
+            public string Titel { get; set; }
+            public string Kuenstler { get; set; }
+        }
+        [HttpPost]
+        [Route("api/add_song_to_playlist")]
+        public IActionResult AddSongToPlaylist([FromBody] ASTPRequest request)
+        {
+            try
+            {
+                
+
+                Playlist playlist = db.Playlists.Include(x=>x.Lieds).FirstOrDefault(x => x.Id == request.PlaylistID);
+                Lieder lied = db.Lieders.Include(x=> x.Playlists).FirstOrDefault(x => x.Id == request.LiedID);
+                if(playlist == null || lied == null)
+                {
+                    return NotFound("Playlist oder Lied nicht gefunden");
+                }
+                if (playlist.Lieds.Contains(lied))
+                {
+                    return BadRequest("Lied bereits in Playlist");
+                }
+                playlist.Lieds.Add(lied);
+                db.SaveChanges();
+                return Ok("Lied wurde Playlist hinzugefügt");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        public class ASTPRequest
+        {
+            public int PlaylistID { get; set; }
+            public int LiedID { get; set; }
+        }
+
 
     }
 }

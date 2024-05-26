@@ -15,7 +15,7 @@ namespace Client
 {
     public partial class MainWindow : Window
     {
-        private readonly NavigationService _navigationService;
+       
 
         public MainWindow()
         {

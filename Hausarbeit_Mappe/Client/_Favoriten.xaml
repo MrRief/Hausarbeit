@@ -11,14 +11,26 @@
              >
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="5*"></ColumnDefinition>
+            <ColumnDefinition Width="3*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <StackPanel x:Name="Lieder">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <TextBlock Visibility="Collapsed" x:Name="Error" Grid.ColumnSpan="3" Foreground="Red">aaaa</TextBlock>
+        
+        <StackPanel Grid.Row="1" x:Name="Lieder">
             <TextBlock Text="Favoriten:"></TextBlock>
         </StackPanel>
-        <StackPanel Grid.Column="1" x:Name="Favorit">
+        <StackPanel Grid.Row="1" Grid.Column="2" x:Name="Favorit">
             <TextBlock Text="Favoriten entfernen:"></TextBlock>
         </StackPanel>
+        <StackPanel Grid.Row="1" x:Name="Playlist" Grid.Column="1">
+            <TextBlock Text="Zu Playlist hinzufügen"></TextBlock>
+        </StackPanel>
+        
     </Grid>
 </UserControl>

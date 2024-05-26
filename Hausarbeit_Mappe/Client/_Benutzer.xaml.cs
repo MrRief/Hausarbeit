@@ -141,14 +141,10 @@ namespace Client
                     string apiUrl = "https://localhost:44351/api/update_user";
                     var content = new StringContent(JsonConvert.SerializeObject(updatenutzer), Encoding.UTF8, "application/json");
                     HttpResponseMessage response = await client.PostAsync(apiUrl, content);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return await response.Content.ReadAsStringAsync();
-                    }
-                    else
-                    {
-                        throw new Exception("Fehler beim Updaten");
-                    }
+
+                    return await response.Content.ReadAsStringAsync();
+
+
 
                 }
             }

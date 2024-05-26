@@ -22,7 +22,8 @@ namespace Client
     public partial class _Suche : UserControl
     {
         private MainPage _mainPage;
-        public class Song
+        private _Playlists _playlists;
+        public class Lied
         {
             public string? Titel { get; set; }
             public string? Kuenstler { get; set; }
@@ -31,6 +32,7 @@ namespace Client
         {
             InitializeComponent();
             _mainPage = page;
+            
             GetSongsAsync();
         }
 
@@ -41,7 +43,7 @@ namespace Client
                 string apiUrl = "https://localhost:44351/api/songs_in_db";
                 var response = await client.GetAsync(apiUrl);
 
-                var songlist = await response.Content.ReadAsAsync<List<Song>>();
+                var songlist = await response.Content.ReadAsAsync<List<Lied>>();
 
                 Create_Button(songlist);
 
@@ -49,7 +51,7 @@ namespace Client
             }
         }
 
-        private void Create_Button(List<Song> songs)
+        private void Create_Button(List<Lied> songs)
         {
             foreach (var song in songs)
             {
@@ -59,6 +61,7 @@ namespace Client
                 {
                     _mainPage.SongAusSuche(song.Titel, song.Kuenstler);
                 };
+              
                   
                 Suche.Children.Add(Herbert);
             }

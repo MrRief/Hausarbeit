@@ -164,7 +164,7 @@ namespace Client
 
         private void Playlists_Click(object sender, RoutedEventArgs e)
         {
-            ContentFrame.NavigationService.Navigate(new _Playlists());
+            ContentFrame.NavigationService.Navigate(new _Playlists(this,UserID));
 
         }
 
@@ -213,7 +213,7 @@ namespace Client
         {
             if (!donttrigger)
             {
-                FavoritHinzufuegen(true, ATitel.Text, AKuenstler.Text);
+                FavoritHinzufuegen(ATitel.Text, AKuenstler.Text);
 
 
             }
@@ -222,19 +222,37 @@ namespace Client
         {
             if (!donttrigger)
             {
-                FavoritHinzufuegen(false,ATitel.Text,AKuenstler.Text);
+                FavoritEntfernen(ATitel.Text,AKuenstler.Text);
 
             }
         }
 
-        public async void FavoritHinzufuegen(bool isFavorite,string titel,string kuenstler)
+        public async void FavoritHinzufuegen(string titel,string kuenstler)
         {
             int liedid = await GetSongID(titel,kuenstler);
             try
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    string apiUrl = $"https://localhost:44351/api/favorite?favorit={isFavorite}&nutzerid={UserID}&liedid={liedid}";
+                    string apiUrl = $"https://localhost:44351/api/add_favorite?nutzerid={UserID}&liedid={liedid}";
+                    HttpResponseMessage response = await client.PostAsync(apiUrl, null);
+
+
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        public async void FavoritEntfernen(string titel, string kuenstler)
+        {
+            int liedid = await GetSongID(titel, kuenstler);
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    string apiUrl = $"https://localhost:44351/api/del_favorite?nutzerid={UserID}&liedid={liedid}";
                     HttpResponseMessage response = await client.PostAsync(apiUrl, null);
 
 
@@ -246,7 +264,7 @@ namespace Client
             }
         }
 
-        private async Task<int> GetSongID(string titel,string kuenstler)
+        public async Task<int> GetSongID(string titel,string kuenstler)
         {
             string _titel = Uri.EscapeDataString(titel);
             string _kuenstler = Uri.EscapeDataString(kuenstler);
@@ -276,7 +294,7 @@ namespace Client
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    string apiUrl = "https://localhost:44351/api/get_favorite?nutzerid=" + UserID + "&liedid=" + liedid;
+                    string apiUrl = "https://localhost:44351/api/is_favorite?nutzerid=" + UserID + "&liedid=" + liedid;
                     HttpResponseMessage response = await client.GetAsync(apiUrl);
                     return await response.Content.ReadAsAsync<bool>();
 

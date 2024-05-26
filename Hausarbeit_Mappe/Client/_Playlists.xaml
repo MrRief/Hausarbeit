@@ -9,18 +9,51 @@
              d:DesignHeight="450" d:DesignWidth="800"
              MaxWidth="1024" MaxHeight="768"
              >
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="auto"></RowDefinition>
-        </Grid.RowDefinitions>
-        <StackPanel Grid.Column="1">
-        <Button x:Name="Anlegen"  Content="Playlist anlegen" Click="Anlegen_Click" ></Button>
-        <Button x:Name="Loeschen" Content="Playlist löschen" Click="Loeschen_Click"></Button>
-        </StackPanel>
-    </Grid>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <TextBlock Margin="5" Text="Name der Playlist:"></TextBlock>
+            <Button Margin="5 0 5 5" Grid.Column="1" Grid.Row="1" x:Name="Anlegen"  Content="Playlist anlegen" Click="Anlegen_Click" ></Button>
+            <TextBox Margin="5 5 5 0" x:Name="Playlistname" Grid.Column="1"></TextBox>
+            <TextBlock x:Name="Error" Foreground="Red" Grid.Row="2" Visibility="Collapsed" Grid.ColumnSpan="2">aaaa</TextBlock>
+
+
+
+
+            <StackPanel  Margin="5" Grid.Row="4" Grid.ColumnSpan="2"   x:Name="Playlists" >
+                <TextBlock  Text="Playlists:"></TextBlock>
+                <ItemsControl Margin="5" x:Name="PlaylistItemControl">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Expander Header="{Binding Name}" Margin="5">
+                                <ListBox ItemsSource="{Binding Lieder}">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Titel}" Margin="5"></TextBlock>
+                                                <TextBlock Text=" _ "></TextBlock>
+                                                <TextBlock Text="{Binding Kuenstler}" Margin="5"></TextBlock>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Expander>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+
+        </Grid>
+    </ScrollViewer>
 </UserControl>
