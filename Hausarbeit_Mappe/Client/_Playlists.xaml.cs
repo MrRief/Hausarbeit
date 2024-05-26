@@ -18,6 +18,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml.Linq;
 using static Client._Suche;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Client
 {
@@ -63,13 +64,13 @@ namespace Client
                     HttpResponseMessage response = await client.PostAsync(apiUrl, content);
                     if (response.IsSuccessStatusCode)
                     {
-                        Error.Visibility= Visibility.Visible;
+                        Error.Visibility = Visibility.Visible;
                         Error.Text = "Playlist erfolgreich erstellt";
                         LoadPlaylists();
                     }
                     else
                     {
-                        Error.Visibility= Visibility.Visible;
+                        Error.Visibility = Visibility.Visible;
                         Error.Text = await response.Content.ReadAsStringAsync();
 
                     }
@@ -108,18 +109,52 @@ namespace Client
         {
 
             List<PlaylistDTO> playlists = await GetPlaylistsAsync();
-            
+
             PlaylistItemControl.ItemsSource = playlists;
+            foreach (PlaylistDTO playlist in playlists)
+            {
+                ComboBoxItem item = new ComboBoxItem();
+                item.Content = playlist.Name;
+                item.Tag = playlist.Id;
+
+                PlaylistComboBox.Items.Add(item);
+            }
         }
-        public async Task<List<PlaylistDTO>> ReturnPlaylists()
+
+
+        private void PlaylistComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            return await GetPlaylistsAsync();
+            int playlistid = PlaylistComboBox.SelectedItem.Tag;
         }
-        
-        
-       
+        private async Task LoeschePlaylist(int userid, int playlistid)
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    string apiUrl = "https://localhost:44351/api/drop_playlist";
+                    var request = new { nutzerid = userid, playlistid };
+                    var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await client.PostAsync(apiUrl, content);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Error.Visibility = Visibility.Visible;
+                        Error.Text = "Playlist erfolgreich erstellt";
+                        LoadPlaylists();
+                    }
+                    else
+                    {
+                        Error.Visibility = Visibility.Visible;
+                        Error.Text = await response.Content.ReadAsStringAsync();
 
-
-
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Error.Visibility = Visibility.Visible;
+                throw new Exception(Error.Text = ex.Message);
+            }
+        }
     }
 }

@@ -20,11 +20,15 @@
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
             </Grid.RowDefinitions>
 
             <TextBlock Margin="5" Text="Name der Playlist:"></TextBlock>
             <Button Margin="5 0 5 5" Grid.Column="1" Grid.Row="1" x:Name="Anlegen"  Content="Playlist anlegen" Click="Anlegen_Click" ></Button>
             <TextBox Margin="5 5 5 0" x:Name="Playlistname" Grid.Column="1"></TextBox>
+            <TextBlock Text="Playlist löschen" Grid.Row="3"></TextBlock>
+            <ComboBox SelectionChanged="PlaylistComboBox_SelectionChanged" Name="PlaylistComboBox" Grid.Column="1" Grid.Row="3"></ComboBox>
             <TextBlock x:Name="Error" Foreground="Red" Grid.Row="2" Visibility="Collapsed" Grid.ColumnSpan="2">aaaa</TextBlock>
 
 

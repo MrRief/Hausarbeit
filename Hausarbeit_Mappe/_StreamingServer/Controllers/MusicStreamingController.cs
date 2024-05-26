@@ -12,6 +12,7 @@ using Azure;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.Data.SqlClient;
 using static _StreamingServer.Controllers.MusicStreamingController;
+using System.Security.Cryptography.X509Certificates;
 
 namespace _StreamingServer.Controllers
 {
@@ -284,7 +285,7 @@ namespace _StreamingServer.Controllers
         {
             try
             {
-                
+
                 Nutzer nutzer = db.Nutzers.Include(x => x.Lieds).FirstOrDefault(x => x.NutzerId == nutzerid);
 
                 Lieder lied = db.Lieders.Include(x => x.Nutzers).FirstOrDefault(x => x.Id == liedid);
@@ -302,7 +303,7 @@ namespace _StreamingServer.Controllers
                 db.SaveChanges();
                 return Ok("Favorit hinzugefügt");
             }
-            
+
             catch (Exception ex)
             {
                 Console.WriteLine("Exception Message: " + ex.Message);
@@ -329,7 +330,7 @@ namespace _StreamingServer.Controllers
                     nutzer.Lieds.Remove(lied);
 
                 }
-               
+
                 db.SaveChanges();
                 return Ok("Favorit entfernt");
 
@@ -360,7 +361,7 @@ namespace _StreamingServer.Controllers
                     isFavorite = true;
                 }
                 return Ok(isFavorite);
-              
+
             }
             catch (Exception ex)
             {
@@ -374,7 +375,7 @@ namespace _StreamingServer.Controllers
         {
             try
             {
-                Nutzer nutzer = db.Nutzers.Include(x => x.Lieds).ThenInclude(x=> x.Künstler).FirstOrDefault(x => x.NutzerId == nutzerid);
+                Nutzer nutzer = db.Nutzers.Include(x => x.Lieds).ThenInclude(x => x.Künstler).FirstOrDefault(x => x.NutzerId == nutzerid);
 
                 if (nutzer == null)
                 {
@@ -394,7 +395,7 @@ namespace _StreamingServer.Controllers
             }
 
         }
-        
+
         [HttpPost]
         [Route("api/create_playlist")]
         public IActionResult CreatePlaylist([FromBody] CreatePlaylistDTO playlist)
@@ -406,20 +407,20 @@ namespace _StreamingServer.Controllers
                 {
                     return NotFound("Nutzer nicht gefunden");
                 }
-               
 
-                if (db.Playlists.Any(x=> x.Name == playlist.name && x.NutzerId == playlist.NutzerID))
+
+                if (db.Playlists.Any(x => x.Name == playlist.name && x.NutzerId == playlist.NutzerID))
                 {
                     return BadRequest("Eine Playlist mit diesem Namen existiert bereits.");
                 }
-                Playlist neuePlaylist = new Playlist 
+                Playlist neuePlaylist = new Playlist
                 {
                     Name = playlist.name,
                     NutzerId = playlist.NutzerID,
                 };
                 db.Playlists.Add(neuePlaylist);
                 db.SaveChanges();
-               
+
                 return Ok("Playlist erstellt.");
             }
             catch (Exception ex)
@@ -427,12 +428,45 @@ namespace _StreamingServer.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPost]
+        [Route("api/drop_playlist")]
+        public IActionResult DropPlaylist([FromBody] DropPlaylistDTO playlist)
+        {
+            try
+            {
+                Nutzer nutzer = db.Nutzers.FirstOrDefault(x => x.NutzerId == playlist.nutzerid);
+                Playlist p = db.Playlists.FirstOrDefault(x => x.Id == playlist.playlistid);
+
+                if (nutzer == null || p == null)
+                {
+                    return NotFound("Nutzer nicht gefunden");
+                }
+
+                if (nutzer.Playlists.Contains(p))
+                {
+                    nutzer.Playlists.Remove(p);
+                }
+                db.SaveChanges();
+
+                return Ok("Playlist entfernt.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+        public class DropPlaylistDTO
+        {
+            public int nutzerid { get; set; }
+            public int playlistid { get; set; }
+        }
         public class CreatePlaylistDTO
         {
-           public int NutzerID { get; set; }
+            public int NutzerID { get; set; }
             public string name { get; set; }
         }
-       
+
         [HttpGet]
         [Route("api/get_playlists")]
         public IActionResult GetPlaylists([FromQuery] int nutzerid)
@@ -483,11 +517,11 @@ namespace _StreamingServer.Controllers
         {
             try
             {
-                
 
-                Playlist playlist = db.Playlists.Include(x=>x.Lieds).FirstOrDefault(x => x.Id == request.PlaylistID);
-                Lieder lied = db.Lieders.Include(x=> x.Playlists).FirstOrDefault(x => x.Id == request.LiedID);
-                if(playlist == null || lied == null)
+
+                Playlist playlist = db.Playlists.Include(x => x.Lieds).FirstOrDefault(x => x.Id == request.PlaylistID);
+                Lieder lied = db.Lieders.Include(x => x.Playlists).FirstOrDefault(x => x.Id == request.LiedID);
+                if (playlist == null || lied == null)
                 {
                     return NotFound("Playlist oder Lied nicht gefunden");
                 }
