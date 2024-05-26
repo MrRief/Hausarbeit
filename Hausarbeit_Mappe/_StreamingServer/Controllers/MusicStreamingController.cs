@@ -265,6 +265,8 @@ namespace _StreamingServer.Controllers
                     if (!nutzer.Lieds.Contains(lied))
                     {
                         nutzer.Lieds.Add(lied);
+                        db.SaveChanges();
+                        return Ok("Favorit hinzugefügt");
                     }
                 }
                 else
@@ -272,11 +274,14 @@ namespace _StreamingServer.Controllers
                     if (nutzer.Lieds.Contains(lied))
                     {
                         nutzer.Lieds.Remove(lied);
+                        db.SaveChanges();
+                        return Ok("Favorit entfernt");
 
                     }
                 }
-                db.SaveChanges();
-                return Ok("Favoritenstatus geändert!");
+                return BadRequest("Nichts geändert");
+                
+                
             }
             catch (Exception ex)
             {
@@ -289,22 +294,26 @@ namespace _StreamingServer.Controllers
         {
             try
             {
-                
+                bool isFavorite = false;
                 Nutzer nutzer = db.Nutzers.FirstOrDefault(x => x.NutzerId == nutzerid);
+                Lieder lied = db.Lieders.FirstOrDefault(x => x.Id == liedid);
 
-                if (nutzer == null)
+                if (nutzer == null || lied == null)
                 {
                     return NotFound("User not found.");
                 }
-                
-                foreach(var favorit in nutzer.Lieds)
+                if (nutzer.Lieds.Contains(lied))
                 {
-                    Console.WriteLine($"Favorit song id:{favorit}");
+                    isFavorite = true;
                 }
-
-                bool isFavorite = nutzer.Lieds.Any(l => l.Id == liedid);
-
                 return Ok(isFavorite);
+                
+                
+
+                
+               
+
+                return Ok(isFavoriteL);
             }
             catch (Exception ex)
             {
