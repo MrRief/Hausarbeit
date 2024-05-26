@@ -22,9 +22,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Client
 {
-    /// <summary>
-    /// Interaktionslogik für _Playlists.xaml
-    /// </summary>
+    
     public partial class _Playlists : UserControl
     {
         private MainPage _mainPage;
