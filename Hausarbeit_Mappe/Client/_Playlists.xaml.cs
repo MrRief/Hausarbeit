@@ -122,9 +122,10 @@ namespace Client
         }
 
 
-        private void PlaylistComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void PlaylistComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             int playlistid = PlaylistComboBox.SelectedItem.Tag;
+           await LoeschePlaylist(UserID, playlistid);
         }
         private async Task LoeschePlaylist(int userid, int playlistid)
         {
