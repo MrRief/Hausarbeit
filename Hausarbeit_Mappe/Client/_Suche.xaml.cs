@@ -64,6 +64,13 @@ namespace Client
               
                   
                 Suche.Children.Add(Herbert);
+                Button add = new Button();
+                add.Content = "+";
+                add.Click +=  (sender, e) =>
+                {
+                    _mainPage.AddSongToQueue(song.Titel, song.Kuenstler);
+                };
+                Buttonpanel.Children.Add(add);
             }
 
 

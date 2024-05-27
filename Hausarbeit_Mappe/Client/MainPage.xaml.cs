@@ -34,6 +34,8 @@ namespace Client
         private DispatcherTimer _timer;
         private int UserID;
         private bool donttrigger = false;
+        private int liedindex = -1;
+        private List<LiedDTO> warteschlange;
 
 
         public MainPage(MainWindow wnd, int UID)
@@ -42,19 +44,22 @@ namespace Client
             ContentFrame.NavigationService.Navigate(new _Suche(this));
             _mainWindow = wnd;
             UserID = UID;
+            mediaElement.MediaOpened += MediaElement_MediaOpened;
+            mediaElement.MediaEnded += MediaElement_MediaEnded;
 
 
         }
 
         private void InitTimer()
         {
-            mediaElement.MediaOpened += MediaElement_MediaOpened;
-            mediaElement.MediaEnded += MediaElement_MediaEnded;
+
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromSeconds(1);
             _timer.Tick += Timer_Tick;
             _timer.Start();
         }
+
+
 
         private void Timer_Tick(object? sender, EventArgs e)
         {
@@ -65,15 +70,150 @@ namespace Client
             CurrentTimeTextBlock.Text = mediaElement.Position.ToString(@"mm\:ss");
         }
 
-        private void MediaElement_MediaEnded(object sender, RoutedEventArgs e)
+        private async void MediaElement_MediaEnded(object sender, RoutedEventArgs e)
         {
             PositionSlider.Value = 0;
+
             if (repeat)
             {
                 mediaElement.Position = TimeSpan.Zero;
                 mediaElement.Play();
             }
+            else if (warteschlange != null && liedindex >= 0 && liedindex < warteschlange.Count - 1)
+            {
+                liedindex++;
+                var nextSong = warteschlange[liedindex];
+                UpdateWarteschlange();
+                await PlaySong(nextSong.Titel, nextSong.Kuenstler);
+            }
+            else if (Lieder.Children.Count == 0 && Entfernen.Children.Count == 0)
+            {
+                warteschlange = null;
+                liedindex = -1;
+            }
+            else
+            {
+                UpdateWarteschlange();
+            }
+
         }
+        public void UpdateWarteschlange()
+        {
+            if (Lieder.Children.Count > 0 && Entfernen.Children.Count > 0)
+            {
+                UIElement todelete = Lieder.Children[0];
+                UIElement todelete2 = Entfernen.Children[0];
+                Lieder.Children.Remove(todelete);
+                Entfernen.Children.Remove(todelete2);
+            }
+        }
+        public void SetWarteschlange()
+        {
+
+            foreach (var song in warteschlange)
+            {
+                if (song != warteschlange[0])
+                {
+                    bool check = Lieder.Children.OfType<TextBlock>().Any(x => x.Text == $"{song.Titel} - {song.Kuenstler}");
+                    if (!check)
+                    {
+
+                        TextBlock text = new TextBlock();
+                        text.Text = $"{song.Titel} - {song.Kuenstler}";
+                        Lieder.Children.Add(text);
+
+                        Button btn = new Button();
+                        btn.Content = "X";
+
+
+                        LiedDTO capturedSong = song;
+
+                        btn.Click += (sender, e) =>
+                        {
+                            warteschlange.Remove(capturedSong);
+                            Lieder.Children.Remove(text);
+                            Entfernen.Children.Remove(btn);
+
+                        };
+
+                        Entfernen.Children.Add(btn);
+                    }
+
+
+                }
+            }
+
+
+        }
+        private async Task PlaySong(string titel, string kuenstler)
+        {
+            ATitel.Text = titel;
+            AKuenstler.Text = kuenstler;
+
+            string query = Uri.EscapeDataString(kuenstler + " - " + titel);
+            string audioUrl = $"https://localhost:44351/api/stream?filetoget={query}";
+            mediaElement.Source = new Uri(audioUrl);
+
+            Favorit.Visibility = Visibility.Visible;
+            if (await IsFavorite())
+            {
+                donttrigger = true;
+            }
+            Favorit.IsChecked = donttrigger;
+            donttrigger = false;
+            InitTimer();
+            mediaElement.Play();
+        }
+        public async void SongAusPlaylist(List<LiedDTO> liste)
+        {
+            if (liste == null || liste.Count == 0) return;
+
+            warteschlange = liste;
+            liedindex = 0;
+            var firstSong = warteschlange[liedindex];
+            ATitel.Text = firstSong.Titel;
+            AKuenstler.Text = firstSong.Kuenstler;
+            SetWarteschlange();
+            await PlaySong(firstSong.Titel, firstSong.Kuenstler);
+        }
+        public async void AddSongToQueue(string titel, string kuenstler)
+        {
+
+            LiedDTO neuinderschlange = new LiedDTO();
+            neuinderschlange.Kuenstler = kuenstler;
+            neuinderschlange.Titel = titel;
+            if (warteschlange != null)
+            {
+                warteschlange.Add(neuinderschlange);
+                TextBlock text = new TextBlock();
+                text.Text = $"{neuinderschlange.Titel} - {neuinderschlange.Kuenstler}";
+                Lieder.Children.Add(text);
+
+                Button btn = new Button();
+                btn.Content = "X";
+
+
+                LiedDTO capturedSong = neuinderschlange;
+
+                btn.Click += (sender, e) =>
+                {
+                    warteschlange.Remove(capturedSong);
+                    Lieder.Children.Remove(text);
+                    Entfernen.Children.Remove(btn);
+
+                };
+
+                Entfernen.Children.Add(btn);
+            }
+            else if (liedindex == -1)
+            {
+                warteschlange = new List<LiedDTO>();
+                warteschlange.Add(neuinderschlange);
+                liedindex = 0;
+                await PlaySong(titel, kuenstler);
+            }
+        }
+
 
         private void MediaElement_MediaOpened(object sender, RoutedEventArgs e)
         {
@@ -101,6 +241,8 @@ namespace Client
             InitTimer();
             mediaElement.Play();
         }
+
+
         private void Start_Click(object sender, RoutedEventArgs e)
         {
             if (mediaElement != null)
@@ -158,13 +300,13 @@ namespace Client
 
         private void Favoriten_Click(object sender, RoutedEventArgs e)
         {
-            ContentFrame.NavigationService.Navigate(new _Favoriten(this,UserID));
+            ContentFrame.NavigationService.Navigate(new _Favoriten(this, UserID));
 
         }
 
         private void Playlists_Click(object sender, RoutedEventArgs e)
         {
-            ContentFrame.NavigationService.Navigate(new _Playlists(this,UserID));
+            ContentFrame.NavigationService.Navigate(new _Playlists(this, UserID));
 
         }
 
@@ -222,14 +364,14 @@ namespace Client
         {
             if (!donttrigger)
             {
-                FavoritEntfernen(ATitel.Text,AKuenstler.Text);
+                FavoritEntfernen(ATitel.Text, AKuenstler.Text);
 
             }
         }
 
-        public async void FavoritHinzufuegen(string titel,string kuenstler)
+        public async void FavoritHinzufuegen(string titel, string kuenstler)
         {
-            int liedid = await GetSongID(titel,kuenstler);
+            int liedid = await GetSongID(titel, kuenstler);
             try
             {
                 using (HttpClient client = new HttpClient())
@@ -264,7 +406,7 @@ namespace Client
             }
         }
 
-        public async Task<int> GetSongID(string titel,string kuenstler)
+        public async Task<int> GetSongID(string titel, string kuenstler)
         {
             string _titel = Uri.EscapeDataString(titel);
             string _kuenstler = Uri.EscapeDataString(kuenstler);
@@ -273,7 +415,7 @@ namespace Client
                 using (HttpClient client = new HttpClient())
                 {
                     string apiUrl = "https://localhost:44351/api/get_songid?titel=" + titel + "&kuenstler=" + kuenstler;
-                    
+
 
 
                     HttpResponseMessage response = await client.GetAsync(apiUrl);
@@ -289,7 +431,7 @@ namespace Client
         }
         private async Task<bool> IsFavorite()
         {
-            int liedid = await GetSongID(ATitel.Text,AKuenstler.Text);
+            int liedid = await GetSongID(ATitel.Text, AKuenstler.Text);
             try
             {
                 using (HttpClient client = new HttpClient())
@@ -306,7 +448,6 @@ namespace Client
                 throw;
             }
         }
-
 
 
     }

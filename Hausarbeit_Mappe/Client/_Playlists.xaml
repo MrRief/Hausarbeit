@@ -27,14 +27,25 @@
             <TextBlock Margin="5" Text="Name der Playlist:"></TextBlock>
             <Button Margin="5 0 5 5" Grid.Column="1" Grid.Row="1" x:Name="Anlegen"  Content="Playlist anlegen" Click="Anlegen_Click" ></Button>
             <TextBox Margin="5 5 5 0" x:Name="Playlistname" Grid.Column="1"></TextBox>
-            <TextBlock Text="Playlist löschen" Grid.Row="3"></TextBlock>
-            <ComboBox SelectionChanged="PlaylistComboBox_SelectionChanged" Name="PlaylistComboBox" Grid.Column="1" Grid.Row="3"></ComboBox>
+            <TextBlock Margin="5" Text="Playlist löschen" Grid.Row="3"></TextBlock>
+            <ComboBox Margin="5" SelectionChanged="PlaylistComboBox_SelectionChanged" Name="PlaylistComboBox" Grid.Column="1" Grid.Row="3"></ComboBox>
+            <TextBlock Margin="5" Text="Starte Playlist:" Grid.Row="4"></TextBlock>
+            <Grid Margin="5" Grid.Row="4" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <ComboBox Name="Playlisttostart"></ComboBox>
+                <Button Content="Starte Playlist" Grid.Column="1" x:Name="Starte_selected_playlist" Click="Starte_selected_playlist_Click"></Button>
+            </Grid>
+            
+            
             <TextBlock x:Name="Error" Foreground="Red" Grid.Row="2" Visibility="Collapsed" Grid.ColumnSpan="2">aaaa</TextBlock>
 
 
 
 
-            <StackPanel  Margin="5" Grid.Row="4" Grid.ColumnSpan="2"   x:Name="Playlists" >
+            <StackPanel  Margin="5" Grid.Row="5" Grid.ColumnSpan="2"   x:Name="Playlists" >
                 <TextBlock  Text="Playlists:"></TextBlock>
                 <ItemsControl Margin="5" x:Name="PlaylistItemControl">
                     <ItemsControl.ItemTemplate>
@@ -44,9 +55,9 @@
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="{Binding Titel}" Margin="5"></TextBlock>
+                                                <TextBlock Text="{Binding Titel}" Tag="{Binding Id}" Margin="5" MouseDown="TextBlock_MouseDown"></TextBlock>
                                                 <TextBlock Text=" _ "></TextBlock>
-                                                <TextBlock Text="{Binding Kuenstler}" Margin="5"></TextBlock>
+                                                <TextBlock Text="{Binding Kuenstler}" Margin="5" MouseDown="TextBlock_MouseDown"></TextBlock>
                                             </StackPanel>
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>

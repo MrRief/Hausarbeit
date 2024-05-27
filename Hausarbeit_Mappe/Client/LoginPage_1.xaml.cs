@@ -34,7 +34,7 @@ namespace Client
 
 
         }
-        private async void Loginbutton_Click(object sender, RoutedEventArgs e)
+        private  void Loginbutton_Click(object sender, RoutedEventArgs e)
         {
 
             Login();

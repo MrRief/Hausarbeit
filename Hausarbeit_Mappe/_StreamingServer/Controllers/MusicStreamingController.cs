@@ -499,6 +499,36 @@ namespace _StreamingServer.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet]
+        [Route("api/get_playlist_songs")]
+        public IActionResult GetPlaylistSongs([FromQuery] int playlistId)
+        {
+            try
+            {
+                
+                Playlist playlist = db.Playlists.Include(p => p.Lieds).ThenInclude(l => l.Künstler).FirstOrDefault(p => p.Id == playlistId);
+
+                if (playlist == null)
+                {
+                    return NotFound("Playlist nicht gefunden");
+                }
+
+                var songs = playlist.Lieds.Select(x => new LiedDTO
+                {
+                    Id = x.Id,
+                    Titel = x.Titel,
+                    Kuenstler = x.Künstler.Name
+                }).ToList();
+
+                return Ok(songs);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
         public class PlaylistDTO
         {
             public int Id { get; set; }
@@ -543,7 +573,34 @@ namespace _StreamingServer.Controllers
             public int PlaylistID { get; set; }
             public int LiedID { get; set; }
         }
+        [HttpPost]
+        [Route("api/del_song_from_playlist")]
+        public IActionResult DelSongFromPlaylist([FromBody] ASTPRequest request)
+        {
+            try
+            {
 
+
+                Playlist playlist = db.Playlists.Include(x => x.Lieds).FirstOrDefault(x => x.Id == request.PlaylistID);
+                Lieder lied = db.Lieders.Include(x => x.Playlists).FirstOrDefault(x => x.Id == request.LiedID);
+                if (playlist == null || lied == null)
+                {
+                    return NotFound("Playlist oder Lied nicht gefunden");
+                }
+                if (playlist.Lieds.Contains(lied))
+                {
+                    playlist.Lieds.Remove(lied);
+                    db.SaveChanges();
+                    return Ok("Lied aus Playlist entfernt");
+                }
+                
+                return BadRequest("Lied nicht in Playlist");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
     }
 }
