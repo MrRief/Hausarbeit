@@ -22,12 +22,12 @@ namespace Client
     /// </summary>
     public partial class LoginPage_2 : UserControl
     {
-        public readonly HttpClient client;
+       
         private MainWindow _mainWindow;
         public LoginPage_2(MainWindow wnd)
         {
             InitializeComponent();
-            client = HttpClientSingleton.Instance;
+           
             _mainWindow = wnd;
         }
 

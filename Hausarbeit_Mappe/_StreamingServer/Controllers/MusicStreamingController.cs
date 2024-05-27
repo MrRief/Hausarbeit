@@ -233,31 +233,35 @@ namespace _StreamingServer.Controllers
         {
             try
             {
-                var userToDelete = db.Nutzers.Include(n => n.Playlists).Include(n => n.Lieds).ThenInclude(l => l.Nutzers).SingleOrDefault(x => x.NutzerId == nutzerid);
+               
+                var deleteuser = db.Nutzers.Include(n => n.Playlists).Include(n => n.Lieds).SingleOrDefault(x => x.NutzerId == nutzerid);
 
-                if (userToDelete == null)
+                if (deleteuser == null)
                 {
-                    return NotFound("User not found");
+                    return NotFound("Nutzer nicht gefunden");
                 }
-                var favoriten = db.Set<Dictionary<string, object>>("NutzerFavoriten")
-                                  .Where(f => (int)f["NutzerId"] == nutzerid);
+
+                
+                var favoriten = db.Set<Dictionary<string, object>>("NutzerFavoriten").Where(f => (int)f["NutzerID"] == nutzerid);
 
                 db.RemoveRange(favoriten);
 
-              
-                db.Playlists.RemoveRange(userToDelete.Playlists);
+                
+                db.Playlists.RemoveRange(deleteuser.Playlists);
 
-                db.Nutzers.Remove(userToDelete);
+                
+                db.Nutzers.Remove(deleteuser);
 
                 db.SaveChanges();
 
-                return Ok();
+                return Ok("User deleted successfully");
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpPost]
         [Route("api/login")]
         public IActionResult Login([FromBody] LoginModel request)

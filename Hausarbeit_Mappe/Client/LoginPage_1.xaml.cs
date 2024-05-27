@@ -22,13 +22,13 @@ namespace Client
     /// </summary>
     public partial class LoginPage_1 : UserControl
     {
-        public readonly HttpClient client;
+        
         private MainWindow _mainwindow;
         private int UserId;
         public LoginPage_1(MainWindow wnd)
         {
             InitializeComponent();
-            client = HttpClientSingleton.Instance;
+           
             _mainwindow = wnd;
 
 
@@ -50,7 +50,15 @@ namespace Client
                 var LoginModel = new {Email =  email, Passwort = passwort};
 
                 HttpResponseMessage responseMessage = await client.PostAsJsonAsync(apiUrl,LoginModel);
-                UserId = await responseMessage.Content.ReadAsAsync<int>();
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    UserId = await responseMessage.Content.ReadAsAsync<int>();
+
+                }
+                else
+                {
+                    UserId = 0;
+                }
                 return responseMessage.IsSuccessStatusCode;
             }
         }
