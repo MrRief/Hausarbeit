@@ -51,7 +51,7 @@ public partial class MusicStreamDbContext : DbContext
 
             entity.HasOne(d => d.Künstler).WithMany(p => p.Lieders)
                 .HasForeignKey(d => d.KünstlerId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_KünstlerID");
         });
 
@@ -71,11 +71,11 @@ public partial class MusicStreamDbContext : DbContext
                     "NutzerFavoriten",
                     r => r.HasOne<Lieder>().WithMany()
                         .HasForeignKey("LiedId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FK_NutzerFavoriten_LiedID"),
                     l => l.HasOne<Nutzer>().WithMany()
                         .HasForeignKey("NutzerId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FK_NutzerFavoriten_NutzerID"),
                     j =>
                     {
@@ -89,7 +89,7 @@ public partial class MusicStreamDbContext : DbContext
         modelBuilder.Entity<Playlist>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Playlist__3214EC0761F2969E");
-
+            
             entity.ToTable("Playlist");
 
             entity.Property(e => e.Name).HasMaxLength(20);
@@ -104,18 +104,21 @@ public partial class MusicStreamDbContext : DbContext
                     "LiederInPlaylist",
                     r => r.HasOne<Lieder>().WithMany()
                         .HasForeignKey("LiedId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FK_LiederInPlaylists_LiedID"),
                     l => l.HasOne<Playlist>().WithMany()
                         .HasForeignKey("PlaylistId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FK_LiederInPlaylists_PlaylistID"),
+                    
+                    
                     j =>
                     {
                         j.HasKey("PlaylistId", "LiedId");
                         j.ToTable("LiederInPlaylists");
                         j.IndexerProperty<int>("PlaylistId").HasColumnName("PlaylistID");
                         j.IndexerProperty<int>("LiedId").HasColumnName("LiedID");
+                        
                     });
         });
 

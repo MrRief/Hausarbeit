@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Client"
              mc:Ignorable="d" 
-             Background="White"
+             Background="Wheat"
              d:DesignHeight="450" d:DesignWidth="800"
              MaxWidth="1024" MaxHeight="768"
              >
@@ -25,17 +25,17 @@
                 <RowDefinition Height="auto"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <TextBlock Text="Name:"></TextBlock>
-            <TextBlock Text="Vorname" Grid.Row="1"></TextBlock>
-            <TextBlock Text="Email" Grid.Row="2"></TextBlock>
-            <TextBlock Text="Passwort:" Grid.Row="3"></TextBlock>
-            <TextBlock Text="Neues Passwort:" Grid.Row="4"></TextBlock>
+            <TextBlock Margin="5" VerticalAlignment="Center" Text="Name:"></TextBlock>
+            <TextBlock Margin="5" VerticalAlignment="Center" Text="Vorname" Grid.Row="1"></TextBlock>
+            <TextBlock Margin="5" VerticalAlignment="Center" Text="Email" Grid.Row="2"></TextBlock>
+            <TextBlock Margin="5" VerticalAlignment="Center" Text="Passwort:" Grid.Row="3"></TextBlock>
+            <TextBlock Margin="5" VerticalAlignment="Center" Text="Neues Passwort:" Grid.Row="4"></TextBlock>
 
-            <TextBox Name="Name" BorderBrush="Black"  Grid.Column="1"></TextBox>
-            <TextBox Name="Vorname" BorderBrush="Black" Grid.Row="1" Grid.Column="1"></TextBox>
-            <TextBox Name="Email" BorderBrush="Black" Grid.Row="2" Grid.Column="1"></TextBox>
-            <PasswordBox Name="AltesPasswort" BorderBrush="Black" Grid.Row="3" Grid.Column="1"></PasswordBox>
-            <PasswordBox Name="NeusePasswort" BorderBrush="Black" Grid.Row="4" Grid.Column="1"></PasswordBox>
+            <TextBox Margin="5" VerticalAlignment="Center" Name="Name" BorderBrush="Black"  Grid.Column="1"></TextBox>
+            <TextBox Margin="5" VerticalAlignment="Center" Name="Vorname" BorderBrush="Black" Grid.Row="1" Grid.Column="1"></TextBox>
+            <TextBox  Margin="5" VerticalAlignment="Center" Name="Email" BorderBrush="Black" Grid.Row="2" Grid.Column="1"></TextBox>
+            <PasswordBox Margin="5" VerticalAlignment="Center" Name="AltesPasswort" BorderBrush="Black" Grid.Row="3" Grid.Column="1"></PasswordBox>
+            <PasswordBox Margin="5" VerticalAlignment="Center" Name="NeusePasswort" BorderBrush="Black" Grid.Row="4" Grid.Column="1"></PasswordBox>
 
             <Grid Grid.Row="5" Grid.ColumnSpan="2">
                 <Grid.ColumnDefinitions>
@@ -43,9 +43,9 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="Aendern" Content="Daten ändern" Click="Aendern_Click"></Button>
-                <Button x:Name="Loeschen" Content="Konto löschen" Grid.Column="1" Click="Loeschen_Click"></Button>
-                <Button x:Name="Ausloggen" Grid.Column="2" Content="Ausloggen" Click="Ausloggen_Click"></Button>
+                <Button Margin="5" x:Name="Aendern" Content="Daten ändern" Click="Aendern_Click"></Button>
+                <Button Margin="5" x:Name="Loeschen" Content="Konto löschen" Grid.Column="1" Click="Loeschen_Click"></Button>
+                <Button Margin="5" x:Name="Ausloggen" Grid.Column="2" Content="Ausloggen" Click="Ausloggen_Click"></Button>
             </Grid>
             <TextBlock TextWrapping="Wrap" x:Name="Error" Foreground="Red" Visibility="Collapsed" Grid.Row="6" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
 

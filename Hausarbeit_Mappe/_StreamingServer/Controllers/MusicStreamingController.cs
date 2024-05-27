@@ -61,7 +61,7 @@ namespace _StreamingServer.Controllers
                 Lieder lieder = db.Lieders.FirstOrDefault(x => x.Titel == titel && x.KünstlerId == kid.KünstlerId);
                 if (lieder == null)
                 {
-                    return NotFound();
+                    return NotFound("Lied nicht gefunden");
                 }
                 return Ok(lieder.Id);
             }
@@ -79,7 +79,7 @@ namespace _StreamingServer.Controllers
                 Nutzer nutzer = db.Nutzers.SingleOrDefault(nutzer => nutzer.NutzerId == id);
                 if (nutzer == null)
                 {
-                    return NotFound();
+                    return NotFound("Nutzer nicht gefunden");
                 }
                 NutzerDTO nutzerdto = new NutzerDTO
                 {
@@ -113,7 +113,7 @@ namespace _StreamingServer.Controllers
 
                 if (!Directory.Exists(folderpath))
                 {
-                    return NotFound();
+                    return NotFound("Ordner nicht gefunden");
                 }
 
                 string[] audioFiles = Directory.GetFiles(folderpath, "*.mp3")
@@ -125,7 +125,7 @@ namespace _StreamingServer.Controllers
                 .ToArray();
                 if (audioFiles.Length == 0)
                 {
-                    return NotFound("Audio file not found");
+                    return NotFound("Datei nicht gefunden");
                 }
                 string filetostream = audioFiles[0];
 
@@ -174,7 +174,7 @@ namespace _StreamingServer.Controllers
                 Nutzer nutzer = db.Nutzers.FirstOrDefault(x => x.NutzerId == updatenutzer.NutzerId);
                 if (nutzer == null)
                 {
-                    return NotFound();
+                    return NotFound("Nutzer nicht gefunden");
                 }
 
                 var emailInUse = db.Nutzers.Any(x => x.Email == updatenutzer.Email && x.NutzerId != updatenutzer.NutzerId);
@@ -229,18 +229,28 @@ namespace _StreamingServer.Controllers
         }
         [HttpPost]
         [Route("api/delete_user")]
-        public IActionResult DeleteUser([FromBody] int id)
+        public IActionResult DeleteUser([FromBody] int nutzerid)
         {
             try
             {
+                var userToDelete = db.Nutzers.Include(n => n.Playlists).Include(n => n.Lieds).ThenInclude(l => l.Nutzers).SingleOrDefault(x => x.NutzerId == nutzerid);
 
-                Nutzer delete = db.Nutzers.SingleOrDefault(x => x.NutzerId == id);
-                if (delete == null)
+                if (userToDelete == null)
                 {
-                    return NotFound();
+                    return NotFound("User not found");
                 }
-                db.Nutzers.Remove(delete);
+                var favoriten = db.Set<Dictionary<string, object>>("NutzerFavoriten")
+                                  .Where(f => (int)f["NutzerId"] == nutzerid);
+
+                db.RemoveRange(favoriten);
+
+              
+                db.Playlists.RemoveRange(userToDelete.Playlists);
+
+                db.Nutzers.Remove(userToDelete);
+
                 db.SaveChanges();
+
                 return Ok();
             }
             catch (Exception ex)
@@ -260,7 +270,7 @@ namespace _StreamingServer.Controllers
 
                 if (nutzerindb == null)
                 {
-                    return NotFound();
+                    return NotFound("Nutzer nicht gefunden");
                 }
 
                 if (nutzerindb.Passwort == request.Passwort)
@@ -292,7 +302,7 @@ namespace _StreamingServer.Controllers
 
                 if (nutzer == null || lied == null)
                 {
-                    return NotFound();
+                    return NotFound("Nutzer oder Lied nicht gefunden");
                 }
 
                 if (!nutzer.Lieds.Contains(lied))
@@ -306,7 +316,6 @@ namespace _StreamingServer.Controllers
 
             catch (Exception ex)
             {
-                Console.WriteLine("Exception Message: " + ex.Message);
                 return BadRequest(ex.Message);
             }
         }
@@ -323,7 +332,7 @@ namespace _StreamingServer.Controllers
                 Lieder lied = db.Lieders.Include(x => x.Nutzers).FirstOrDefault(x => x.Id == liedid);
                 if (nutzer == null || lied == null)
                 {
-                    return NotFound();
+                    return NotFound("Nutzer oder Lied nicht gefunden");
                 }
                 if (nutzer.Lieds.Contains(lied))
                 {
@@ -354,7 +363,7 @@ namespace _StreamingServer.Controllers
 
                 if (nutzer == null || lied == null)
                 {
-                    return NotFound("User not found.");
+                    return NotFound("Nutzer nicht gefunden");
                 }
                 if (nutzer.Lieds.Contains(lied))
                 {
@@ -379,7 +388,7 @@ namespace _StreamingServer.Controllers
 
                 if (nutzer == null)
                 {
-                    return NotFound();
+                    return NotFound("Nutzer nicht gefunden");
                 }
                 var list = nutzer.Lieds.Select(x => new
                 {
@@ -477,7 +486,7 @@ namespace _StreamingServer.Controllers
 
                 if (nutzer == null)
                 {
-                    return NotFound("User not found");
+                    return NotFound("Nutzer nicht gefunden");
                 }
 
                 var playlists = nutzer.Playlists.Select(x => new PlaylistDTO

@@ -76,7 +76,7 @@ namespace Client
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    string apiUrl = "https://localhost:44351/api/delete_user";
+                    string apiUrl = $"https://localhost:44351/api/delete_user";
                     var content = new StringContent(JsonConvert.SerializeObject(UserId), Encoding.UTF8, "application/json");
                     HttpResponseMessage response = await client.PostAsync(apiUrl, content);
                     if (response.IsSuccessStatusCode)

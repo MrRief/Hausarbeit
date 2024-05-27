@@ -8,36 +8,38 @@
              d:DesignHeight="450" d:DesignWidth="800" Background="White"
              MaxWidth="1024" MaxHeight="768"
              >
+    <Border BorderBrush="Black" BorderThickness="5">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Name:"></TextBlock>
-        <TextBlock Text="Vorname" Grid.Row="1"></TextBlock>
-        <TextBlock Text="Email" Grid.Row="2"></TextBlock>
-        <TextBlock Text="Passwort:" Grid.Row="3"></TextBlock>
-        <TextBlock Text="Passwort bestätigen:" Grid.Row="4"></TextBlock>
+        <TextBlock  VerticalAlignment="Center" Margin="10" FontSize="20" Text="Name:"></TextBlock>
+        <TextBlock VerticalAlignment="Center" Margin="10" FontSize="20" Text="Vorname" Grid.Row="1"></TextBlock>
+        <TextBlock VerticalAlignment="Center" Margin="10" FontSize="20" Text="Email" Grid.Row="2"></TextBlock>
+        <TextBlock VerticalAlignment="Center" Margin="10" FontSize="20" Text="Passwort:" Grid.Row="3"></TextBlock>
+        <TextBlock VerticalAlignment="Center" Margin="10" FontSize="20" Text="Passwort bestätigen:" Grid.Row="4"></TextBlock>
 
-        <TextBox Name="Name" BorderBrush="Black"  Grid.Column="1"></TextBox>
-        <TextBox Name="Vorname" BorderBrush="Black" Grid.Row="1" Grid.Column="1"></TextBox>
-        <TextBox Name="Email" BorderBrush="Black" Grid.Row="2" Grid.Column="1"></TextBox>
-        <PasswordBox Name="P1" BorderBrush="Black" Grid.Row="3" Grid.Column="1"></PasswordBox>
-        <PasswordBox Name="P2" BorderBrush="Black" Grid.Row="4" Grid.Column="1"></PasswordBox>
+        <TextBox Margin="5" Name="Name" BorderBrush="Black"  Grid.Column="1"></TextBox>
+        <TextBox Margin="5" Name="Vorname" BorderBrush="Black" Grid.Row="1" Grid.Column="1"></TextBox>
+        <TextBox Margin="5" Name="Email" BorderBrush="Black" Grid.Row="2" Grid.Column="1"></TextBox>
+        <PasswordBox Margin="5" Name="P1" BorderBrush="Black" Grid.Row="3" Grid.Column="1"></PasswordBox>
+        <PasswordBox Margin="5" Name="P2" BorderBrush="Black" Grid.Row="4" Grid.Column="1"></PasswordBox>
 
-        <TextBlock Visibility="Collapsed" Name="Error" Grid.Row="5" Foreground="Red"></TextBlock>
+        <TextBlock Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.ColumnSpan="2" FontSize="20" TextWrapping="Wrap" Visibility="Collapsed" Name="Error" Grid.Row="5" Foreground="Red"></TextBlock>
         
-        <Button Click="Registrieren_Click" Name="Registrieren" Content="Registrieren" Grid.Row="6" Grid.Column="1"></Button>
-        <Button Click="Zurueck_Click" Name="Zurueck" Content="Zurück" Grid.Row="6" Grid.Column="0"></Button>
+        <Button Margin="10"  VerticalAlignment="Center" FontSize="20" Click="Registrieren_Click" Name="Registrieren" Content="Registrieren" Grid.Row="6" Grid.Column="1"></Button>
+        <Button Margin="10" VerticalAlignment="Bottom" FontSize="20" Click="Zurueck_Click" Name="Zurueck" Content="Zurück" Grid.Row="6" Grid.Column="0"></Button>
     </Grid>
+    </Border>
 </UserControl>

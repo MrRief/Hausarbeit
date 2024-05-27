@@ -8,6 +8,7 @@
              d:DesignHeight="450" d:DesignWidth="800" Background="White"
              MaxWidth="1024" MaxHeight="768"
              >
+    <Border BorderBrush="Black" BorderThickness="5">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"></ColumnDefinition>
@@ -17,20 +18,23 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <TextBlock  Text="Email:"></TextBlock>
-        <TextBox x:Name="Email" Grid.Row="1" Height="20" BorderBrush="Aqua"></TextBox>
+        <TextBlock Margin="5" Text="MUSICSTREAMING" Grid.ColumnSpan="2" FontSize="50" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+        <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Center" Grid.Row="1" FontSize="15" Margin="5"  Text="Email:"></TextBlock>
+        <TextBox Margin="5" x:Name="Email" Grid.Row="2" Height="20" BorderBrush="Aqua"></TextBox>
 
-        <TextBlock  Grid.Column="1"  Text="Passwort:"></TextBlock>
-        <PasswordBox KeyDown="Password_KeyDown" x:Name="Password" Grid.Column="1" Grid.Row="1" Height="20" BorderBrush="Aqua"></PasswordBox>
+        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom" FontSize="15" Margin="5" Grid.Row="1" Grid.Column="2"  Text="Passwort:"></TextBlock>
+        <PasswordBox Margin="5" KeyDown="Password_KeyDown" x:Name="Password" Grid.Column="1" Grid.Row="2" Height="20" BorderBrush="Aqua"></PasswordBox>
 
-        <TextBlock Name="ErrorText" Visibility="Collapsed" Foreground="Red" FontSize="20" Grid.Row="2" Grid.ColumnSpan="2"></TextBlock>
+        <TextBlock TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5" Name="ErrorText" Visibility="Collapsed" Foreground="Red" FontSize="20" Grid.Row="3" Grid.ColumnSpan="2"></TextBlock>
 
-        <Button Click="Loginbutton_Click" x:Name="Loginbutton" Grid.Row="3" Content="Login"></Button>
-        <Button Click="Registerbutton_Click" x:Name="Registerbutton" Grid.Column="1" Grid.Row="3" Content="Registrieren"></Button>
+        <Button FontSize="15" Margin="5" Click="Loginbutton_Click" x:Name="Loginbutton" Grid.Row="4" Content="Login"></Button>
+        <Button FontSize="15" Margin="5" Click="Registerbutton_Click" x:Name="Registerbutton" Grid.Column="1" Grid.Row="4" Content="Registrieren"></Button>
 
 
     </Grid>
+    </Border>
 </UserControl>

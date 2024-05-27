@@ -23,16 +23,22 @@ namespace Client
     {
         private MainPage _mainPage;
         private _Playlists _playlists;
+        private List<SongButtonPair> _buttons;
         public class Lied
         {
             public string? Titel { get; set; }
             public string? Kuenstler { get; set; }
         }
+        public class SongButtonPair
+        {
+            public Button? SongButton { get; set; }
+            public Button? AddButtton { get; set; }
+        }
         public _Suche(MainPage page)
         {
             InitializeComponent();
             _mainPage = page;
-            
+            _buttons = new List<SongButtonPair>();
             GetSongsAsync();
         }
 
@@ -55,22 +61,24 @@ namespace Client
         {
             foreach (var song in songs)
             {
-                Button Herbert = new Button();
-                Herbert.Content = $"{song.Titel} - {song.Kuenstler}";
-                Herbert.Click += (sender, e) =>
+                Button Song = new Button();
+                Song.Content = $"{song.Titel} - {song.Kuenstler}";
+                Song.Click += (sender, e) =>
                 {
                     _mainPage.SongAusSuche(song.Titel, song.Kuenstler);
                 };
-              
-                  
-                Suche.Children.Add(Herbert);
+
+
+                Suche.Children.Add(Song);
                 Button add = new Button();
                 add.Content = "+";
-                add.Click +=  (sender, e) =>
+                add.Click += (sender, e) =>
                 {
                     _mainPage.AddSongToQueue(song.Titel, song.Kuenstler);
                 };
                 Buttonpanel.Children.Add(add);
+                var pair = new SongButtonPair { SongButton = Song,AddButtton = add};
+                _buttons.Add(pair);
             }
 
 
@@ -80,10 +88,13 @@ namespace Client
         {
             string filter = Filter.Text.ToLower();
 
-            foreach (Button b in Suche.Children.OfType<Button>())
+            foreach (var pair in _buttons)
             {
-                string buttonContent = b.Content.ToString().ToLower();
-                b.Visibility = string.IsNullOrEmpty(filter) || buttonContent.Contains(filter) ? Visibility.Visible : Visibility.Collapsed;
+                string buttonContent = pair.SongButton.Content.ToString().ToLower();
+                bool isVisible = string.IsNullOrEmpty(filter) || buttonContent.Contains(filter);
+
+                pair.SongButton.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+                pair.AddButtton.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
             }
         }
     }

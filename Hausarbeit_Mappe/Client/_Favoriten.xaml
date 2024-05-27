@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Client"
              mc:Ignorable="d" 
-             Background="Green"
+             Background="Wheat"
              d:DesignHeight="450" d:DesignWidth="800"
              MaxWidth="1024" MaxHeight="768"
              >
@@ -20,17 +20,20 @@
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Visibility="Collapsed" x:Name="Error" Grid.ColumnSpan="3" Foreground="Red">aaaa</TextBlock>
+        <TextBlock TextWrapping="Wrap" FontSize="20" Visibility="Collapsed" x:Name="Error" Grid.ColumnSpan="3" Foreground="Red">aaaa</TextBlock>
         
         <StackPanel Grid.Row="1" x:Name="Lieder">
-            <TextBlock Text="Favoriten:"></TextBlock>
+            <TextBlock VerticalAlignment="Center" FontSize="15" Text="Favoriten:"></TextBlock>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="2" x:Name="Favorit">
-            <TextBlock Text="Favoriten entfernen:"></TextBlock>
+            <TextBlock VerticalAlignment="Center" FontSize="15" Text="Favoriten entfernen:"></TextBlock>
         </StackPanel>
         <StackPanel Grid.Row="1" x:Name="Playlist" Grid.Column="1">
-            <TextBlock Text="Zu Playlist hinzufügen"></TextBlock>
+            <TextBlock VerticalAlignment="Center" FontSize="15" Text="Zu Playlist hinzufügen:"></TextBlock>
         </StackPanel>
+        <Border Grid.Column="0" Grid.RowSpan="2" BorderThickness="1" BorderBrush="Black"></Border>
+        <Border Grid.Column="1" Grid.RowSpan="2" BorderThickness="1" BorderBrush="Black"></Border>
+        <Border Grid.Column="2" Grid.RowSpan="2" BorderThickness="1" BorderBrush="Black"></Border>
         
     </Grid>
 </UserControl>

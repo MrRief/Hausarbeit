@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Client"
              mc:Ignorable="d" 
-             Background="Violet"
+             Background="Wheat"
              d:DesignHeight="450" d:DesignWidth="800"
              MaxWidth="1024" MaxHeight="768"
              >
@@ -21,15 +21,15 @@
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
             </Grid.RowDefinitions>
-            <TextBox x:Name="Filter" TextChanged="Filter_TextChanged" Grid.ColumnSpan="2"></TextBox>
-            <TextBlock Visibility="Collapsed" x:Name="Error" Grid.Row="1" Grid.ColumnSpan="2">aaaaa</TextBlock>
+            <TextBox Margin="5" x:Name="Filter" TextChanged="Filter_TextChanged" Grid.ColumnSpan="2"></TextBox>
+            <TextBlock Margin="5" Visibility="Collapsed" x:Name="Error" Grid.Row="1" Grid.ColumnSpan="2">aaaaa</TextBlock>
 
 
-            <StackPanel  x:Name="Suche" Grid.Row="2">
+            <StackPanel Margin="5"  x:Name="Suche" Grid.Row="2">
                 <TextBlock Text="Ergebnisse:"></TextBlock>
             </StackPanel>
 
-            <StackPanel x:Name="Buttonpanel" Grid.Row="3" Grid.Column="1">
+            <StackPanel Margin="5" x:Name="Buttonpanel" Grid.Row="3" Grid.Column="1">
                 <TextBlock Text="Zur Warteschlange hinzufügen"></TextBlock>
             </StackPanel>
         </Grid>

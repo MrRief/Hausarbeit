@@ -5,12 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Client"
              mc:Ignorable="d" 
-             Background="Aqua"
+             Background="Wheat"
              d:DesignHeight="450" d:DesignWidth="800"
              MaxWidth="1024" MaxHeight="768"
              >
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <Grid Margin="5">
+        <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
@@ -29,8 +29,8 @@
             <TextBox Margin="5 5 5 0" x:Name="Playlistname" Grid.Column="1"></TextBox>
             <TextBlock Margin="5" Text="Playlist löschen" Grid.Row="3"></TextBlock>
             <ComboBox Margin="5" SelectionChanged="PlaylistComboBox_SelectionChanged" Name="PlaylistComboBox" Grid.Column="1" Grid.Row="3"></ComboBox>
-            <TextBlock Margin="5" Text="Starte Playlist:" Grid.Row="4"></TextBlock>
-            <Grid Margin="5" Grid.Row="4" Grid.Column="1">
+            <TextBlock Margin="5 15" Text="Starte Playlist:" Grid.Row="4"></TextBlock>
+            <Grid  Margin="5 15" Grid.Row="4" Grid.Column="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="3*"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
@@ -43,7 +43,8 @@
             <TextBlock x:Name="Error" Foreground="Red" Grid.Row="2" Visibility="Collapsed" Grid.ColumnSpan="2">aaaa</TextBlock>
 
 
-
+            <Border  Grid.ColumnSpan="2" Grid.RowSpan="5" BorderThickness="3" BorderBrush="Black"></Border>
+            <Border Grid.Row="5" Grid.RowSpan="2" Grid.ColumnSpan="2"  BorderThickness="3" BorderBrush="Black"></Border>
 
             <StackPanel  Margin="5" Grid.Row="5" Grid.ColumnSpan="2"   x:Name="Playlists" >
                 <TextBlock  Text="Playlists:"></TextBlock>
